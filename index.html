@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>לומדת AI-DLC – מעבר לרמות 3 ו-4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F6F9; --surface:#FFFFFF; --ink:#1A2233; --muted:#5B667A; --line:#DCE1E8;
+  --navy:#1E3354; --navy-2:#2A4570; --on-navy:#FFFFFF; --on-navy-muted:#B9C5D8;
+  --accent:#DE7F3A; --accent-soft:#FBEBDD; --good:#2F7D3E; --good-soft:#E6F2E7;
+  --bad:#B4372F; --bad-soft:#F8E3E1; --code-bg:#EEF1F5;
+  --radius-s:6px; --radius-m:10px;
+  --font:'Rubik', 'Segoe UI', 'Arial Hebrew', Arial, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1726; --surface:#172238; --ink:#E6EAF1; --muted:#9AA6BA; --line:#2A3752;
+    --navy:#14233D; --navy-2:#22385E; --on-navy:#F2F5FA; --on-navy-muted:#93A3BE;
+    --accent:#F0954F; --accent-soft:#3A2A1E; --good:#6BC07A; --good-soft:#1C3324;
+    --bad:#EE7B72; --bad-soft:#3A1F1E; --code-bg:#1E2B45; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1726; --surface:#172238; --ink:#E6EAF1; --muted:#9AA6BA; --line:#2A3752;
+  --navy:#14233D; --navy-2:#22385E; --on-navy:#F2F5FA; --on-navy-muted:#93A3BE;
+  --accent:#F0954F; --accent-soft:#3A2A1E; --good:#6BC07A; --good-soft:#1C3324;
+  --bad:#EE7B72; --bad-soft:#3A1F1E; --code-bg:#1E2B45; color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.65}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--navy)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--code-bg);padding:1px 6px;border-radius:4px;direction:ltr;unicode-bidi:isolate}
+
+/* ---------- header + progress rail ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);color:var(--on-navy);padding:14px 20px 12px}
+.slogan{max-width:1240px;margin:-4px auto 8px;font-size:12px;line-height:1.4;color:var(--on-navy-muted);opacity:.85;text-align:center}
+.top-row{display:flex;align-items:center;gap:14px;max-width:1240px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.mark{font-weight:700;font-size:15px;letter-spacing:.02em;background:var(--accent);color:#1A1208;padding:6px 10px;border-radius:var(--radius-s);direction:ltr;white-space:nowrap}
+.brand-text{min-width:0}
+.org{font-size:13px;color:var(--on-navy-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.course{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-btn{background:transparent;border:1px solid rgba(255,255,255,.28);color:var(--on-navy);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer;white-space:nowrap}
+.top-btn:hover{background:rgba(255,255,255,.08)}
+.icon-btn{width:38px;height:38px;padding:0;display:grid;place-items:center}
+#menuBtn{display:none}
+
+.rail-wrap{max-width:1240px;margin:14px auto 0}
+.rail{display:flex;gap:10px;align-items:flex-end}
+.seg{min-width:0}
+.seg-label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--on-navy-muted);margin-bottom:6px;white-space:nowrap}
+.seg.is-current .seg-label{color:var(--on-navy)}
+.seg-label b{font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.ticks{display:flex;gap:3px;height:12px;align-items:center}
+.tick{flex:1;height:6px;border:0;padding:0;border-radius:3px;background:rgba(255,255,255,.18);cursor:pointer;position:relative;transition:height .15s}
+.tick.done{background:var(--on-navy-muted)}
+.tick.current{background:var(--accent);height:12px}
+.tick:hover{height:10px}
+.where{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:13.5px;color:var(--on-navy-muted)}
+.where strong{color:var(--on-navy);font-weight:600}
+.pin{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);margin-inline-end:6px;vertical-align:1px}
+
+/* ---------- layout ---------- */
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:40px;max-width:1240px;margin:0 auto;padding:32px 20px 120px}
+.outline{position:sticky;top:178px;align-self:start;max-height:calc(100vh - 200px);overflow:auto;padding-inline-end:4px}
+.outline h3{font-size:13px;font-weight:600;color:var(--muted);margin:22px 0 8px}
+.outline h3:first-child{margin-top:0}
+.outline ol{list-style:none;margin:0;padding:0}
+.outline a{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:var(--radius-s);color:var(--ink);text-decoration:none;font-size:15px;line-height:1.4}
+.outline a:hover{background:var(--surface)}
+.outline a.current{background:var(--surface);box-shadow:inset -3px 0 0 var(--accent);font-weight:600}
+.dot{flex:none;width:16px;height:16px;border-radius:50%;border:2px solid var(--line);margin-top:2px;display:grid;place-items:center}
+.done .dot{background:var(--good);border-color:var(--good)}
+.done .dot::after{content:"";width:6px;height:3px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(-45deg) scaleX(-1);margin-top:-2px}
+.current .dot{border-color:var(--accent)}
+.outline-foot{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.link-btn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:14px}
+
+main{min-width:0;max-width:760px}
+.crumb{font-size:14px;color:var(--muted);margin-bottom:6px}
+h1{font-size:clamp(28px,4vw,38px);line-height:1.2;margin:0 0 18px;font-weight:700;color:var(--navy)}
+:root[data-theme="dark"] h1{color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h1{color:var(--ink)}}
+h2{font-size:21px;margin:34px 0 10px;font-weight:600}
+p{margin:0 0 14px}
+.lead{font-size:19px;color:var(--muted);margin-bottom:24px}
+ul.plain{padding-inline-start:20px;margin:0 0 16px}
+ul.plain li{margin-bottom:6px}
+
+.note{border-inline-start:4px solid var(--good);background:var(--good-soft);padding:14px 18px;border-radius:var(--radius-s);margin:20px 0}
+.note.coe{border-color:var(--accent);background:var(--accent-soft)}
+.note b{display:block;margin-bottom:2px}
+
+.table-scroll{overflow-x:auto;margin:16px 0 22px;border:1px solid var(--line);border-radius:var(--radius-m);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:start;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:13.5px;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+pre{background:var(--code-bg);padding:14px 16px;border-radius:var(--radius-m);overflow-x:auto;direction:ltr;text-align:left;margin:0;font-size:14px;line-height:1.55}
+pre code{background:none;padding:0}
+.code-box{position:relative;margin:14px 0 20px}
+.copy{position:absolute;top:8px;left:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);font-size:12.5px;padding:3px 10px;cursor:pointer}
+
+/* phase strip */
+.phases{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:18px 0 0}
+.phase-btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-s);padding:12px 8px 10px;cursor:pointer;text-align:center;position:relative}
+.phase-btn .pn{display:block;font-weight:600;font-size:15px}
+.phase-btn .pr{display:block;font-size:12.5px;color:var(--muted);direction:ltr}
+.phase-btn .bar{display:block;height:5px;border-radius:3px;background:var(--line);margin-top:8px}
+.phase-btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.phase-btn[aria-pressed="true"] .bar{background:var(--accent)}
+.panel{border:1px solid var(--line);border-top:0;background:var(--surface);padding:16px 18px;border-radius:0 0 var(--radius-m) var(--radius-m);margin-bottom:22px}
+.panel h4{margin:0 0 6px;font-size:17px}
+
+/* anatomy */
+.anat{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;counter-reset:a}
+.anat button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:15px}
+.anat button::before{counter-increment:a;content:counter(a);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--bg);margin-inline-end:8px;font-size:12.5px;font-weight:600}
+.anat button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.anat button[aria-pressed="true"]::before{background:var(--accent);color:#1A1208}
+.anat-panel{border:1px solid var(--line);border-radius:var(--radius-m);background:var(--surface);padding:16px 18px;margin:10px 0 22px}
+
+/* filters */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px;cursor:pointer;font-size:14.5px}
+.chip[aria-pressed="true"]{background:var(--navy);color:var(--on-navy);border-color:var(--navy)}
+tr.dim td{opacity:.35}
+
+/* quiz */
+.quiz{border:1px solid var(--line);border-radius:var(--radius-m);background:var(--surface);padding:18px 20px;margin:18px 0}
+.quiz .qn{font-size:13px;color:var(--muted);margin-bottom:4px}
+.quiz .qq{font-weight:600;margin-bottom:12px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--radius-s);padding:10px 14px;cursor:pointer;font-size:16px;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--muted)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--muted);display:grid;place-items:center;font-size:12.5px;font-weight:600}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.right .k{background:var(--good);border-color:var(--good);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.why{margin-top:12px;font-size:15.5px}
+.why b{color:var(--good)}
+.why.no b{color:var(--bad)}
+.retry{margin-inline-start:8px}
+
+/* checklists */
+.checks{list-style:none;padding:0;margin:12px 0 22px;display:grid;gap:8px}
+.checks label{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-s);padding:11px 14px;cursor:pointer;line-height:1.5}
+.checks input{width:19px;height:19px;margin-top:3px;accent-color:var(--good);flex:none}
+.checks input:checked + span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.count{font-size:14px;color:var(--muted)}
+
+/* welcome */
+.hero{padding:8px 0 10px}
+.hero h1{font-size:clamp(32px,5vw,48px);max-width:16ch}
+.path{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:28px 0 34px;border:1px solid var(--line);border-radius:var(--radius-m);overflow:hidden;background:var(--surface)}
+.path div{padding:16px 18px;border-inline-start:1px solid var(--line)}
+.path div:first-child{border-inline-start:0}
+.path .n{font-size:13px;color:var(--accent);font-weight:600}
+.path .t{font-weight:600;font-size:17px;margin:2px 0}
+.path .d{font-size:14.5px;color:var(--muted);line-height:1.5}
+.personas{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0 26px}
+.persona{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-s);padding:12px 14px;cursor:pointer;text-align:start;line-height:1.4}
+.persona input{margin-top:4px;accent-color:var(--accent);flex:none}
+.persona .pt{font-weight:600}
+.persona .pd{font-size:14px;color:var(--muted)}
+.persona:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:var(--radius-s);padding:12px 22px;font-weight:600;font-size:16px;cursor:pointer;background:var(--navy);color:var(--on-navy)}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* pager */
+.pager{position:fixed;inset:auto 0 0 0;z-index:15;background:var(--surface);border-top:1px solid var(--line);padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px))}
+.pager-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.pager .hint{flex:1;font-size:14px;color:var(--muted);text-align:center}
+
+/* certificate */
+.cert{border:2px solid var(--navy);border-radius:var(--radius-m);background:var(--surface);padding:34px 30px;text-align:center;margin:22px 0;position:relative}
+.cert::before{content:"";position:absolute;inset:8px;border:1px solid var(--line);border-radius:6px;pointer-events:none}
+.cert .co{font-size:14px;color:var(--muted)}
+.cert .cn{font-size:30px;font-weight:700;margin:14px 0 4px;color:var(--navy);min-height:44px}
+.cert .cd{color:var(--muted);font-size:15px}
+.stats{display:flex;justify-content:center;gap:32px;margin:18px 0 6px;flex-wrap:wrap}
+.stats div{font-size:14px;color:var(--muted)}
+.stats strong{display:block;font-size:22px;color:var(--ink)}
+.field{display:grid;gap:6px;margin:16px 0}
+.field input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-s);background:var(--surface);color:var(--ink);max-width:360px}
+
+.scrim{display:none}
+
+@media (max-width: 900px){
+  .layout{grid-template-columns:1fr;padding-top:22px;gap:0}
+  #menuBtn{display:grid}
+  .outline{position:fixed;inset:0 0 0 auto;top:0;width:min(86vw,340px);max-height:none;height:100%;background:var(--bg);z-index:40;padding:calc(20px + env(safe-area-inset-top,0px)) 18px 30px;transform:translateX(100%);transition:transform .2s;box-shadow:0 0 30px rgba(0,0,0,.25)}
+  .outline.open{transform:none}
+  .scrim.open{display:block;position:fixed;inset:0;background:rgba(10,15,25,.45);z-index:35}
+  .org{display:none}
+  .phases{grid-template-columns:repeat(5,minmax(96px,1fr));overflow-x:auto}
+  .path{grid-template-columns:1fr}
+  .path div{border-inline-start:0;border-top:1px solid var(--line)}
+  .path div:first-child{border-top:0}
+  .personas{grid-template-columns:1fr}
+  .seg-label > span{display:none}
+  .seg:not(.is-current) .nm{display:none}
+  .where{font-size:12.5px}
+  #themeBtn{display:none}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@media print{
+  .top,.outline,.pager,.no-print,.scrim{display:none!important}
+  .layout{display:block;padding:0}
+  body{background:#fff}
+  main>*:not(.cert){display:none}
+  .cert{margin:40px auto;border-color:#1E3354}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="slogan" id="slogan"></div>
+  <div class="top-row">
+    <button class="top-btn icon-btn" id="menuBtn" aria-label="תוכן הלומדה" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <div class="brand">
+      <span class="mark">AI-DLC</span>
+      <div class="brand-text">
+        <div class="org" id="orgName"></div>
+        <div class="course" id="courseName"></div>
+      </div>
+    </div>
+    <button class="top-btn" id="personaBtn"></button>
+    <button class="top-btn icon-btn" id="themeBtn" aria-label="החלפת מצב תצוגה">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 2a7 7 0 0 1 0 14z" fill="currentColor"/></svg>
+    </button>
+  </div>
+  <div class="rail-wrap">
+    <div class="rail" id="rail"></div>
+    <div class="where" id="where" aria-live="polite"></div>
+  </div>
+</header>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+  <nav class="outline" id="outline" aria-label="תוכן הלומדה"></nav>
+  <main id="main" tabindex="-1"></main>
+</div>
+<footer class="pager" id="pager">
+  <div class="pager-in">
+    <button class="btn alt" id="prevBtn">הקודם</button>
+    <div class="hint" id="hint"></div>
+    <button class="btn" id="nextBtn">המשך</button>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   הגדרות ארגון – ה-CoE מעדכן כאן לפני פרסום באתר
+   ========================================================= */
+const CONFIG = {
+  org: 'יחידת ה-CoE AI-DLC הארגונית',
+  course: 'לומדת AI-DLC: מעבר לרמות 3 ו-4',
+  contact: 'coe-aidlc@your-org.example',
+  rulesRepo: 'git.your-org.example/coe/aidlc-rules',
+  slogan: 'הסוד להצלחה = "ניסיון, סקרנות ו-AI הם השילוב המנצח."',
+  version: 'גרסה 1.0 · אוקטובר 2026',
+  storageKey: 'aidlc-lomda-v1'
+};
+
+/* ---------------- נתוני תוכן ---------------- */
+const PHASES = [
+  {name:'אתחול', en:'Initialization', range:'0.1–0.3', count:3,
+   what:'הקמת מרחב העבודה וקובץ המצב, הבנת הפרויקט והגדרת ה-intent. כאן נקבע גם ה-scope (הפרופיל) שיקבע את המשך הדרך.',
+   who:'מי שפותח את העבודה – לרוב מפתח/ת או PO.'},
+  {name:'Ideation', en:'Ideation', range:'1.1–1.7', count:7,
+   what:'חקירת הבעיה לפני שמתחייבים לפתרון: מחקר שוק, היתכנות וגבולות ה-scope. פרופילים כמו Classic ו-Express מדלגים עליה.',
+   who:'PO/PM עם Product Agent.'},
+  {name:'Inception', en:'Inception', range:'2.1–2.9', count:9,
+   what:'מה בונים ולמה: דרישות, סיפורי משתמש, דרישות לא פונקציונליות, עיצוב ופירוק העבודה ליחידות (Units).',
+   who:'PO, UX, ארכיטקט/ית וראש צוות.'},
+  {name:'Construction', en:'Construction', range:'3.1–3.7', count:7,
+   what:'איך בונים: עיצוב לכל יחידה, יצירת קוד, Build and Test ו-CI Pipeline, בצ\'קפוינטים מאומתים. כשל באימות עוצר את העבודה.',
+   who:'מפתחים, QA ו-DevOps.'},
+  {name:'Operation', en:'Operation', range:'4.1–4.7', count:7,
+   what:'פריסה, observability, תגובה לתקלות, ביצועים ומשוב שחוזר לפיתוח. זו הפאזה שמבדילה בפועל בין רמה 3 לרמה 4.',
+   who:'DevOps/Platform, אבטחה ו-Operations Agent.'}
+];
+
+const ANATOMY = [
+  {t:'שאלות הבהרה', d:'הסוכן מתחיל בשאלות. כדאי לענות במלואן ולציין הנחות – תשובה חלקית מייצרת תוצר שיידחה בשער.'},
+  {t:'תוכנית', d:'לפני יצירה הסוכן מציג תוכנית לאישור (Plan Approval). רק את/ה יכול/ה לכבות את האישור הזה.'},
+  {t:'תוצר', d:'הסוכן כותב את התוצר לתיקייה aidlc-docs. זה מקור האמת – לא הצ\'אט.'},
+  {t:'סקירה', d:'סוקר (reviewer) בודק את התוצר. בסקירה advisory הממצאים מוצגים בשער; בסקירה adversarial הסוקר מנסה לשבור את התוצר.'},
+  {t:'שער אישור', d:'את/ה מאשר/ת או מבקש/ת שינויים. ההחלטה נרשמת ביומן ה-audit, ורק אחריה עוברים לשלב הבא.'},
+  {t:'לקחים', d:'בסוף שלב הסוכן שואל אם יש מה להוסיף לפעם הבאה. מה שעונים כאן נכנס ללולאת הלמידה והופך לכלל.'}
+];
+
+const PROFILES = [
+  {n:'Classic', c:18, d:'Standard', t:'Standard', use:'טקס בנוסח v1: Inception ו-Construction עם אישור לכל שלב, עד Build and Test', cmd:'/aidlc classic'},
+  {n:'Express', c:10, d:'Minimal', t:'Minimal', use:'הדרך הקצרה מדרישות לקוד ובדיקות, כשהדרישות ברורות', cmd:'/aidlc express'},
+  {n:'Feature', c:33, d:'Standard', t:'Standard', use:'פיצ\'ר ייצורי עם מחזור החיים המלא', cmd:'/aidlc feature'},
+  {n:'Enterprise', c:33, d:'Comprehensive', t:'Comprehensive', use:'עבודה מוסדרת או בסיכון גבוה, עם עקיבות מלאה', cmd:'/aidlc enterprise'},
+  {n:'MVP', c:23, d:'Standard', t:'Standard', use:'אינקרמנט מוצר אמיתי ראשון, בלי פאזת Operation', cmd:'/aidlc mvp'},
+  {n:'Proof of concept', c:8, d:'Minimal', t:'Minimal', use:'בדיקת היתכנות במסלול המימוש הקטן ביותר', cmd:'/aidlc poc'},
+  {n:'Bugfix', c:9, d:'Minimal', t:'Minimal', use:'באג ידוע שצריך תיקון ממוקד ובדיקת רגרסיה', cmd:'/aidlc bugfix'},
+  {n:'Refactor', c:10, d:'Minimal', t:'Minimal', use:'שיפור קוד קיים בלי לשנות התנהגות', cmd:'/aidlc refactor'},
+  {n:'Infrastructure', c:13, d:'Standard', t:'Standard', use:'סביבות, IaC, תשתיות פריסה או עבודת עלויות', cmd:'/aidlc infra'},
+  {n:'Security patch', c:10, d:'Minimal', t:'Minimal', use:'CVE או חולשה ממוקדת', cmd:'/aidlc security-patch'},
+  {n:'Workshop', c:26, d:'Standard', t:'Minimal', use:'הדרכה או סשן קבוצתי בהנחיה', cmd:'/aidlc workshop'}
+];
+
+const AGENTS = [
+  ['Product Agent','חזון, intent, סיפורי משתמש וקריטריוני קבלה'],
+  ['Design Agent','זרימות, מסכים ועקרונות עיצוב'],
+  ['Delivery Agent','תכנון יחידות, סדר העבודה וצ\'קפוינטים'],
+  ['Architect Agent','ארכיטקטורה, NFRs ועיצוב יחידות'],
+  ['AWS Platform Agent','שירותי AWS והחלטות פלטפורמה'],
+  ['Compliance Agent','דרישות רגולציה ועקיבות'],
+  ['DevSecOps Agent','אבטחה לאורך המחזור'],
+  ['Developer Agent','יצירת קוד ומימוש'],
+  ['Quality Agent','אסטרטגיית בדיקות ואימות'],
+  ['Pipeline & Deploy Agent','CI/CD ופריסה'],
+  ['Operations Agent','ניטור, תקלות ומשוב תפעולי']
+];
+
+const PERSONAS = {
+  pm: {name:'מנהל/ת מוצר', short:'PO/PM', desc:'Vision, intent וסיפורי משתמש',
+    agent:'Product Agent', phases:'Ideation, Inception',
+    change:'במקום מסמך דרישות ארוך את/ה כותב/ת Vision ו-intent ברורים, עונה לשאלות הסוכן ומאשר/ת או דוחה את סיפורי המשתמש שהוא מייצר. האחריות על "מה ולמה" נשארת אצלך; העבודה הידנית עוברת לסוכן.',
+    l3:['לכתוב Vision Document לפי המדריך שבתיעוד ה-workflow','לנסח intent אחד ברור לכל יחידת עבודה','לענות לשאלות ה-Product Agent במלואן, כולל הנחות','לאשר או לדחות סיפורי משתמש בשער, עם נימוק כתוב'],
+    l4:['להריץ Ideation מלא: מחקר שוק, היתכנות וגבולות scope','לנסח קריטריוני קבלה כך שה-Quality Agent יבדוק אותם אוטומטית','להגדיר מתי ה-intent עובר לפרופיל Feature או Enterprise','לקרוא משוב מפאזת Operation ולהפוך אותו ל-intent הבא'],
+    ex:'קחו feature אמיתי מה-backlog, נסחו אותו כ-intent והעבירו אותו עד סוף Inception.',
+    cert:'intent שעבר Inception בלי יותר משני סבבי דחייה.',
+    quiz:{q:'הסוכן הציג סיפורי משתמש שחסר בהם קריטריון קבלה מרכזי. מה עושים בשער?',opts:['מאשרים ומתקנים אחר כך בקוד','מבקשים שינוי ומסבירים בדיוק מה חסר','מדלגים לשלב הבא ומעדכנים את הצוות'],a:1,why:'השער הוא המקום לתקן. מה שעובר אותו הופך לבסיס לכל השלבים הבאים, ותיקון מאוחר עולה הרבה יותר.'}},
+  ux: {name:'מעצב/ת UX', short:'UX', desc:'זרימות, מסכים ו-design system',
+    agent:'Design Agent', phases:'Inception',
+    change:'את/ה מכוונ/ת את הסוכן בעקרונות העיצוב ומאשר/ת את הזרימות שהוא מציע. ברמה 4 ה-design system עצמו הופך לידע של הצוות, כך שכל intent חדש יורש אותו.',
+    l3:['להזין לסוכן עקרונות עיצוב וקישור ל-design system','לסקור את הזרימות שה-Design Agent מציע ולאשר בשער','לזהות מתי הצעה של הסוכן סותרת את ה-design system ולבקש שינוי'],
+    l4:['לקודד את ה-design system כ-Team Knowledge','להגדיר כללי נגישות כחלק מהכללים הארגוניים','למדוד כמה הצעות עיצוב עוברות שער בסבב ראשון'],
+    ex:'קחו זרימת מסך אחת והעבירו אותה מ-intent ועד אישור בשער.',
+    cert:'קובץ ידע עיצובי שאושר ע"י ה-CoE ונמצא בשימוש בפיילוט.',
+    quiz:{q:'איך מוודאים שכל intent חדש יורש את ה-design system בלי להזכיר אותו כל פעם?',opts:['מדביקים אותו בתחילת כל שיחה','מקודדים אותו כ-Team Knowledge','מוסיפים אותו כהערה בקוד'],a:1,why:'Team Knowledge נטען אוטומטית לכל intent של הצוות. זה מה שהופך העדפה אישית לסטנדרט.'}},
+  arch: {name:'ארכיטקט/ית', short:'Architect', desc:'NFRs, עיצוב יחידות וכללים',
+    agent:'Architect Agent, AWS Platform Agent', phases:'Inception, Construction',
+    change:'את/ה מגדיר/ה את הסביבה הטכנית, הדרישות הלא פונקציונליות והכללים שהסוכנים עובדים לפיהם, ומאשר/ת את עיצוב היחידות. ברמה 4 ההחלטות שלך הופכות לכללים ארגוניים.',
+    l3:['לכתוב Technical Environment Document','לאשר פירוק ליחידות (Units) ו-NFRs בשער','להבין walking skeleton: היחידה הראשונה היא הפרוסה המשולבת הקטנה ביותר שעובדת'],
+    l4:['לכתוב כללים ארגוניים ולהזין את לולאת הלמידה','לבחור בין Unit-major (סדרתי) ל-stage-major עם swarm','להוביל עבודה בפרופיל Infrastructure','להשתמש ב-/aidlc compose לעבודה שלא מתאימה לפרופיל קיים'],
+    ex:'פרקו מערכת קיימת ליחידות, עם walking skeleton מאושר לפני היחידה השנייה.',
+    cert:'סט כללים ארגוני אחד שעבר ל-CoE ונמצא בשימוש בשני צוותים.',
+    quiz:{q:'מתי Code Generation רץ במקביל (swarm)?',opts:['תמיד, כברירת מחדל','רק כשבוחרים במפורש stage-major ו-swarm','רק בפרופיל Express'],a:1,why:'ברירת המחדל היא יחידה אחת בכל פעם. Unit-major נשאר סדרתי; מקביליות דורשת בחירה מפורשת.'}},
+  dev: {name:'מפתח/ת', short:'Developer', desc:'פרופילים, תוכניות וקוד שנוצר',
+    agent:'Developer Agent', phases:'Construction',
+    change:'את/ה בוחר/ת פרופיל, מאשר/ת תוכניות, בודק/ת את הקוד שנוצר ומזין/ה לקחים. פחות הקלדה, יותר החלטות – ואחריות מלאה על מה שמגיע ל-production.',
+    l3:['לבחור פרופיל נכון: Express, Bugfix, Refactor, Classic','לאשר תוכנית (Plan Approval) אחרי שקראת אותה','לסקור קוד שנוצר כמו קוד של עמית','להמשיך עבודה מ-session קודם בעזרת aidlc-state.md'],
+    l4:['להעניק ולשלול אוטונומיה ב-Construction','לבחור Continue automatically או Review each checkpoint','לכתוב לקחים בסוף שלב','להשתמש ב-/aidlc compose ובדגלי --depth ו---test-strategy'],
+    ex:'Bugfix אחד, Refactor אחד ו-Feature אחד, כל אחד מקצה לקצה.',
+    cert:'שלושה intents שהגיעו ל-production עם audit trail מלא.',
+    quiz:{q:'יש באג ידוע בזמן הקצוב של ההתחברות. איזה פרופיל?',opts:['Feature','Bugfix','Enterprise','Workshop'],a:1,why:'Bugfix מריץ 9 שלבים בעומק Minimal: הבנת הסביבה, דרישות, קוד, Build and Test ופריסה, בלי טקס מיותר.'}},
+  qa: {name:'QA', short:'QA', desc:'אסטרטגיית בדיקות ואימות',
+    agent:'Quality Agent', phases:'Construction',
+    change:'את/ה מגדיר/ה כמה בודקים ואיך, ומאמת/ת שהשלב Build and Test באמת מוכיח את הדרישות. ברמה 4 האיכות נמדדת ברציפות דרך Sensors ופאזת Operation.',
+    l3:['להגדיר test strategy: Minimal, Standard או Comprehensive','לאמת את שלב Build and Test','לקרוא ממצאי reviewer ולהחליט מה חוסם'],
+    l4:['להשתמש ב-Sensors כאמצעי איכות רציף','לשלב בדיקות ביצועים בפאזת Operation','להגדיר אסטרטגיית בדיקות ברירת מחדל לכל פרופיל ביחידה'],
+    ex:'קחו intent קיים, הריצו אותו שוב עם test strategy מקיפה יותר והשוו את התוצאות.',
+    cert:'אסטרטגיית בדיקות לפרופיל Feature שאומצה כברירת מחדל ביחידה.',
+    quiz:{q:'רוצים בדיקות מקיפות יותר ל-intent בפרופיל Feature, בלי להחליף פרופיל. מה עושים?',opts:['עוברים ל-Enterprise','מוסיפים --test-strategy comprehensive','מכבים את הסוקרים'],a:1,why:'הדגלים מכווננים את הפרופיל שנבחר בלי להפוך אותו לפרופיל אחר.'}},
+  ops: {name:'DevOps / Platform', short:'DevOps', desc:'CI/CD, סביבות ו-Operation',
+    agent:'Pipeline & Deploy Agent, Operations Agent', phases:'Construction, Operation',
+    change:'את/ה מחבר/ת את ה-workflow לסביבות, ל-pipeline ולניטור. ברמה 4 את/ה אחראי/ת שהמשוב מהייצור יחזור לסוכנים ולא ייתקע בטיקטים.',
+    l3:['להתקין ולעדכן את הכללים בכל כלי שהצוות משתמש בו','לחבר את שלבי הפריסה','לוודא שפקודת האימות מאושרת ע"י אדם'],
+    l4:['להקים CI Pipeline ו-Sensors','להפעיל את פאזת Operation במלואה: observability ותגובה לתקלות','להזרים משוב תפעולי חזרה ל-Construction'],
+    ex:'הריצו intent בפרופיל Infrastructure שמקים סביבה ו-pipeline.',
+    cert:'pipeline ייצורי שמזין Sensors בפיילוט.',
+    quiz:{q:'איזה פרופיל מתאים להקמת סביבת staging ב-IaC?',opts:['Infrastructure','MVP','Refactor'],a:0,why:'Infrastructure מריץ 13 שלבים שמתמקדים בדרישות, NFRs, עיצוב תשתית, CI/CD, פריסה ו-observability.'}},
+  sec: {name:'אבטחה ו-Compliance', short:'Security', desc:'רגולציה, audit ומדיניות',
+    agent:'DevSecOps Agent, Compliance Agent', phases:'כל הפאזות',
+    change:'את/ה הופך/ת דרישות רגולציה ואבטחה לכללים שהסוכנים מקיימים בעצמם, ובודק/ת את ה-audit trail במקום לרדוף אחרי תיעוד.',
+    l3:['לקרוא יומן audit של intent ולהבין מי אישר מה','לקבוע מתי פרופיל Enterprise הוא חובה','לטפל ב-CVE בפרופיל Security patch'],
+    l4:['לקודד דרישות רגולציה ככללים לסוכני Compliance ו-DevSecOps','להחמיר Guard Policy לעבודה רגישה (--guard-policy strict)','לבדוק commit provenance'],
+    ex:'Security patch אחד ו-intent אחד בפרופיל Enterprise.',
+    cert:'מדיניות פרופילים לפי סיווג מידע, מאושרת וכתובה ככללים.',
+    quiz:{q:'התגלה CVE בספרייה. מה המסלול הנכון?',opts:['Security patch','Enterprise','Proof of concept'],a:0,why:'Security patch נועד לחולשה ממוקדת. Enterprise מתאים לתוכנית אבטחה או Compliance רחבה.'}},
+  lead: {name:'ראש צוות / Delivery', short:'Delivery', desc:'יחידות, צ\'קפוינטים ואוטונומיה',
+    agent:'Delivery Agent', phases:'Inception, Construction',
+    change:'את/ה מתכנן/ת את היחידות והצ\'קפוינטים ומחליט/ה כמה אוטונומיה לתת לסוכן. ברמה 4 את/ה מודד/ת את הצוות לפי זמן מ-intent ל-production.',
+    l3:['לתכנן intents ויחידות','לעקוב אחרי מצב העבודה בקובץ המצב','לנהל כמה משתתפים על אותה עבודה'],
+    l4:['לקבוע מדיניות אוטונומיה וצ\'קפוינטים לצוות','להוביל Multi-Team Construction','למדוד זמן intent-to-production'],
+    ex:'ספרינט אחד שבו כל העבודה החדשה עוברת דרך AI-DLC.',
+    cert:'דוח ספרינט עם מדדי ה-CoE.',
+    quiz:{q:'מה ההבדל בין Continue automatically ל-Review each checkpoint?',opts:['האם הסוכן עובר בין צ\'קפוינטים בלי לעצור לבדיקה שלך','איזה מודל AI רץ','האם נוצרות בדיקות'],a:0,why:'זו ההחלטה כמה אוטונומיה לתת. אפשר להעניק או לשלול אותה במפורש במהלך Construction.'}},
+  exec: {name:'הנהלה וספונסרים', short:'הנהלה', desc:'מדדים ואישור מעבר רמה',
+    agent:'אין – צורכים דשבורד ודוחות', phases:'—',
+    change:'את/ה לא מפעיל/ה סוכנים. התפקיד שלך הוא לבקש את המדדים הנכונים, להבין מה audit trail מוכיח, ולאשר מעבר רמה רק על סמך נתונים.',
+    l3:['להבין מה ההבדל בין רמה 3 לרמה 4','לדעת אילו מדדים לבקש מה-CoE','לקרוא audit trail ברמה כללית'],
+    l4:['לאשר מעבר לרמה 4 לפי מדדים בשני ספרינטים רצופים','לוודא שפאזת Operation ומשוב אכן פועלים','לממן ולתעדף את צוות ה-CoE'],
+    ex:'השתתפו בסקירת פיילוט אחת של ה-CoE.',
+    cert:'אישור מתועד על מעבר רמה של יחידה אחת.',
+    quiz:{q:'איזו ראיה מצדיקה הכרזה על יחידה ברמה 4?',opts:['כל המפתחים קיבלו רישיון לכלי AI','מדדי רמה 4 התקיימו בשני ספרינטים רצופים, כולל Operation ומשוב','הצוות סיים את הלומדה'],a:1,why:'רמה היא התנהגות מדודה לאורך זמן, לא רכישה ולא הדרכה.'}},
+  coe: {name:'צוות ה-CoE', short:'CoE', desc:'הנחיה, הנדסת harness וממשל',
+    agent:'כל הסוכנים', phases:'כל הפאזות',
+    change:'את/ה הבעלים של הכללים הארגוניים, ההסמכה וההחלטה על מעבר רמה. ברמה 4 את/ה גם מפתח/ת את ה-workflow עצמו: שלבים, scopes, sensors ו-plugins.',
+    l3:['להנחות לפי Facilitator Guide ו-Workshop Mode','לתמוך ולפתור תקלות לפי מדריך ה-Troubleshooting','לנעול גרסת workflow לכל היחידות'],
+    l4:['להוסיף שלבים וסוכנים לפי Harness Engineer Guide','להגדיר Scopes מותאמים ו-Team Knowledge','לפתח plugins ו-Sensors ארגוניים'],
+    ex:'הנחו סדנת Workshop לצוות פיילוט.',
+    cert:'plugin או scope ארגוני אחד שנמצא בשימוש בשתי יחידות לפחות.',
+    quiz:{q:'צוות צריך שלב בדיקת נגישות שאין ב-workflow. מה עושה ה-CoE?',opts:['מבקש מהצוות להזכיר לסוכן בכל פעם','מוסיף שלב או plugin לפי Harness Engineer Guide בריפו הארגוני','מחכה לגרסה הבאה של AWS'],a:1,why:'ה-workflow בנוי להרחבה. שינוי ארגוני נכנס פעם אחת לריפו הכללים ומגיע לכל הצוותים.'}}
+};
+
+const QUIZ = {
+  c1a:{q:'מה קורה בשער האישור בסוף שלב?',opts:['הסוכן ממשיך לבד אם אין שגיאות','אדם מאשר את התוצר או מבקש שינויים, וההחלטה נרשמת','השער קיים רק בפרופיל Enterprise'],a:1,why:'AI-DLC בנוי על Human-in-the-loop: ה-AI מציע, אדם מאשר.'},
+  c1b:{q:'כמה שלבים יש ב-workflow המלא, ובכמה פאזות?',opts:['18 שלבים בשלוש פאזות','33 שלבים בחמש פאזות','11 שלבים בארבע פאזות'],a:1,why:'אתחול, Ideation, Inception, Construction ו-Operation – 33 שלבים. כל פרופיל מריץ חלק מהם.'},
+  c1c:{q:'מה מבדיל בפועל בין רמה 4 לרמה 3?',opts:['החלפת כלי הקוד','מחזור חיים מלא כולל Operation, אוטונומיה מבוקרת וכללים ארגוניים','כתיבת יותר בדיקות יחידה'],a:1,why:'ברמה 3 האדם מאשר כל שלב. ברמה 4 ה-AI מוביל את המחזור, והאדם מנהל דרך כללים, חיישנים וידע.'},
+  s1:{q:'תרחיש: תיקון באג ידוע בתהליך ההתחברות.',opts:['Bugfix','Feature','Workshop','MVP'],a:0,why:'באג ידוע ותיקון ממוקד – Bugfix, 9 שלבים.'},
+  s2:{q:'תרחיש: שירות אישורי תשלום במערכת מוסדרת.',opts:['Express','Classic','Enterprise','Proof of concept'],a:2,why:'רגולציה וסיכון גבוה – Enterprise, 33 שלבים בעומק Comprehensive.'},
+  s3:{q:'תרחיש: לבדוק מהר אם ספרייה חדשה בכלל עובדת אצלנו.',opts:['Feature','Proof of concept','Infrastructure','Refactor'],a:1,why:'השאלה היא היתכנות – PoC, 8 שלבים. התוצר הוא ראיה להחלטה, לא קוד לייצור.'},
+  s4:{q:'תרחיש: פיצ\'ר חיפוש חדש לייצור, כולל ניטור ומשוב.',opts:['Express','MVP','Feature','Bugfix'],a:2,why:'פיצ\'ר ייצורי עם מחזור מלא כולל Operation – Feature. MVP מדלג על Operation.'},
+  s5:{q:'תרחיש: הקמת סביבת staging ב-IaC.',opts:['Infrastructure','Security patch','Classic','Workshop'],a:0,why:'סביבות ו-IaC – Infrastructure, 13 שלבים.'},
+  c2a:{q:'איפה נשמר ה-scope והשלב הנוכחי של העבודה?',opts:['בהיסטוריית הצ\'אט','בקובץ aidlc-state.md','בהודעת ה-commit'],a:1,why:'קובץ המצב הוא מה שמאפשר להמשיך עבודה ב-session חדש או בכלי אחר.'},
+  c2b:{q:'מה קורה ב-Construction כשהאימות של יחידה נכשל?',opts:['הסוכן ממשיך ליחידה הבאה','העבודה נעצרת','הכשל נרשם ומטופל רק בסוף'],a:1,why:'כשלים עוצרים את העבודה, גם כשניתנה אוטונומיה.'}
+};
+
+/* ---------------- עזרי תצוגה ---------------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const quiz = (id, label) => `<div class="quiz" data-quiz="${id}"></div>`;
+const codeBox = txt => `<div class="code-box"><button class="copy" data-copy>העתקה</button><pre><code>${esc(txt)}</code></pre></div>`;
+const persona = () => PERSONAS[state.persona];
+
+/* ---------------- פרקים ושלבים ---------------- */
+const CHAPTERS = [
+ {id:'c1', name:'המדריך המקוצר', time:'כ-20 דקות', desc:'מה זה AI-DLC, חמש הפאזות ומה המשמעות של רמות 3 ו-4.', steps:[
+  {id:'c1-1', title:'מה זה AI-DLC', body:()=>`
+    <p class="lead">AI-DLC (AI-Driven Development Life Cycle) היא מתודולוגיה בקוד פתוח של AWS Labs, שמנחה סוכני קוד AI לעבוד בשלבים מובנים – כשאדם מאשר כל החלטה קריטית.</p>
+    <p>זה לא עוזר שמשלים שורות קוד. זה מחזור חיים שלם: מהרעיון, דרך דרישות ועיצוב, קוד ובדיקות, ועד פריסה ותפעול. הסוכן עושה את רוב העבודה; הצוות מחליט.</p>
+    <p>המתודולוגיה מופצת כקבצי כללים (markdown) בריפו <code>awslabs/aidlc-workflows</code>, ועובדת עם כלים שונים: Claude Code, Kiro, Cursor, Codex, GitHub Copilot ו-Amazon Q Developer.</p>
+    <div class="note coe"><b>למה ה-CoE מוביל את זה</b>בלי שפה ותהליך משותפים, כל צוות משתמש ב-AI אחרת והתוצאות לא ניתנות להשוואה. הלומדה הזו היא הבסיס המשותף.</div>`},
+  {id:'c1-2', title:'ארבעה עקרונות', body:()=>`
+    <p class="lead">ארבעה עקרונות מסבירים כמעט כל החלטה ב-workflow.</p>
+    <div class="table-scroll"><table><thead><tr><th>עיקרון</th><th>מה זה אומר בפועל</th></tr></thead><tbody>
+    <tr><td><b>אדם בלולאה</b></td><td>ה-AI מציע, אדם מאשר. כל שלב נגמר בשער אישור.</td></tr>
+    <tr><td><b>מקור אמת אחד</b></td><td>כל התוצרים נכתבים לתיקייה <code>aidlc-docs</code> ולקובץ המצב – לא נשארים בצ'אט.</td></tr>
+    <tr><td><b>אדפטיבי</b></td><td>לא כל עבודה עוברת את כל 33 השלבים. פרופיל (Scope) קובע אילו שלבים ובאיזה עומק.</td></tr>
+    <tr><td><b>בלתי תלוי בכלי</b></td><td>אותם כללים רצים בכלים שונים, כך שהצוות לא נעול על כלי אחד.</td></tr>
+    </tbody></table></div>`},
+  {id:'c1-3', title:'חמש הפאזות', body:()=>`
+    <p class="lead">33 השלבים מחולקים לחמש פאזות. לחצו על פאזה כדי לראות מה קורה בה.</p>
+    <div class="phases" role="group" aria-label="פאזות">${PHASES.map((p,i)=>`<button class="phase-btn" data-phase="${i}" aria-pressed="${i===0}"><span class="pn">${p.name}</span><span class="pr">${p.range}</span><span class="bar"></span></button>`).join('')}</div>
+    <div class="panel" id="phasePanel"></div>
+    <p>הסדר קבוע, אבל לא חייבים לעבור בכל הפאזות. פרופיל Bugfix, למשל, מדלג על Ideation ועל רוב העיצוב.</p>`,
+    after:el=>{ const show=i=>{ const p=PHASES[i]; el.querySelector('#phasePanel').innerHTML=`<h4>${p.name} · שלבים ${p.range} (${p.count})</h4><p>${p.what}</p><p style="margin:0;color:var(--muted)">מי מעורב: ${p.who}</p>`; el.querySelectorAll('[data-phase]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.phase==i)); }; show(0); el.querySelectorAll('[data-phase]').forEach(b=>b.onclick=()=>show(+b.dataset.phase)); }},
+  {id:'c1-4', title:'התפקיד שלך משתנה', body:()=>{ const p=persona(); return `
+    <p class="lead">בכל התפקידים אותו מעבר: מ"מבצעים" ל"מכוונים ומאשרים".</p>
+    ${p?`<div class="note"><b>בתור ${p.name}</b>${p.change}<br><span style="color:var(--muted)">הסוכן שמולו תעבוד/י: ${p.agent} · פאזות עיקריות: ${p.phases}</span></div>`:''}
+    <div class="table-scroll"><table><thead><tr><th>פרסונה</th><th>סוכן AI-DLC</th><th>פאזות עיקריות</th></tr></thead><tbody>
+    ${Object.entries(PERSONAS).map(([k,v])=>`<tr${k===state.persona?' style="background:var(--accent-soft)"':''}><td>${v.name}</td><td>${v.agent}</td><td>${v.phases}</td></tr>`).join('')}
+    </tbody></table></div>`;}},
+  {id:'c1-5', title:'רמות 3 ו-4', body:()=>`
+    <p class="lead">רמה 3: ה-AI מציע, האדם מאשר בכל שער. רמה 4: ה-AI מוביל את המחזור כולו, כולל תפעול, והאדם מנהל דרך כללים, חיישנים וידע.</p>
+    <div class="table-scroll"><table><thead><tr><th>ממד</th><th>רמה 3 · AI-assisted</th><th>רמה 4 · AI-native</th></tr></thead><tbody>
+    <tr><td>מי מוביל</td><td>האדם, ה-AI מציע תוצרים</td><td>ה-AI, האדם מגדיר כוונה ומאשר בשערים מרכזיים</td></tr>
+    <tr><td>פרופילים</td><td>Classic, Express, Bugfix, MVP</td><td>Feature, Enterprise, Infrastructure, compose</td></tr>
+    <tr><td>פאזות</td><td>Inception ו-Construction</td><td>כל 33 השלבים, כולל Operation ומשוב</td></tr>
+    <tr><td>שערים</td><td>אישור אנושי בכל שלב</td><td>Plan Approval וצ'קפוינטים, אוטונומיה ו-swarm</td></tr>
+    <tr><td>איכות</td><td>סקירה advisory, בדיקות Standard</td><td>Sensors, סקירה adversarial, Guard Policy, לולאת למידה</td></tr>
+    <tr><td>ידע</td><td>כללי ברירת המחדל של הריפו</td><td>Team Knowledge, כללים ו-plugins ארגוניים</td></tr>
+    </tbody></table></div>
+    <div class="note coe"><b>הערת ה-CoE</b>ל-AWS אין מודל רמות רשמי ל-AI-DLC. ההגדרה כאן נשענת על מודל הבשלות AI-SDLC (AI-assisted ו-AI-native) ומתורגמת ליכולות של ה-workflow.</div>`},
+  {id:'c1-6', title:'בדיקת ידע', quiz:['c1a','c1b','c1c'], body:()=>`
+    <p class="lead">שלוש שאלות לסיום הפרק המקוצר. אפשר לנסות שוב עד שעונים נכון.</p>
+    ${quiz('c1a')}${quiz('c1b')}${quiz('c1c')}`}
+ ]},
+ {id:'c2', name:'המדריך המלא', time:'כ-60 דקות', desc:'התקנה, מבנה הקבצים, מה קורה בתוך שלב, פרופילים, Construction וסוכנים.', steps:[
+  {id:'c2-1', title:'התקנה והרצה ראשונה', body:()=>`
+    <p class="lead">מתקינים פעם אחת לכל ריפו: מעתיקים שתי תיקיות כללים למקום שהכלי שלכם קורא מתוכו.</p>
+    <ul class="plain"><li><code>aws-aidlc-rules</code> – ה-workflow המרכזי.</li><li><code>aws-aidlc-rule-details</code> – פירוט לכל פאזה ושלב.</li></ul>
+    <p>דוגמה ל-Kiro, מתוך התיעוד הרשמי:</p>
+    ${codeBox('cp -R ~/Downloads/aidlc-rules/aws-aidlc-rules .kiro/steering/\ncp -R ~/Downloads/aidlc-rules/aws-aidlc-rule-details .kiro/')}
+    <p>ל-Amazon Q Developer:</p>
+    ${codeBox('cp -R ~/Downloads/aidlc-rules/aws-aidlc-rules .amazonq/rules/')}
+    <p>לכלים אחרים (Claude Code, Cursor, Codex ועוד) יש מדריך נפרד בתיעוד. אחרי ההתקנה מתחילים עבודה בתיאור שלה:</p>
+    ${codeBox('/aidlc Fix the login timeout bug')}
+    <div class="note coe"><b>בארגון שלנו</b>אל תורידו גרסה ישירות מ-GitHub. השתמשו בגרסה הנעולה מריפו הכללים הארגוני: <code>${esc(CONFIG.rulesRepo)}</code>.</div>`},
+  {id:'c2-2', title:'מבנה הקבצים', body:()=>`
+    <p class="lead">שלושה דברים חשוב להכיר בפרויקט: הכללים, התוצרים וקובץ המצב.</p>
+    ${codeBox('project/\n├── .aidlc-rule-details/     # פירוט כללים לפי פאזה\n│   ├── inception/\n│   ├── construction/\n│   └── operations/\n└── aidlc-docs/              # כל התוצרים: דרישות, עיצוב, תוכניות\n    ├── aidlc-state.md       # scope, שלב נוכחי, החלטות\n    ├── inception/\n    └── construction/')}
+    <div class="table-scroll"><table><thead><tr><th>קובץ / תיקייה</th><th>למה הוא חשוב</th></tr></thead><tbody>
+    <tr><td><code>aidlc-docs</code></td><td>מקור האמת. מה שלא נכתב כאן לא קרה.</td></tr>
+    <tr><td><code>aidlc-state.md</code></td><td>שומר את ה-scope, השלב הנוכחי וההגדרות. מאפשר להמשיך ב-session חדש.</td></tr>
+    <tr><td>יומן audit</td><td>מי אישר מה ומתי. זו הראיה לבשלות ולעמידה ברגולציה.</td></tr>
+    </tbody></table></div>`},
+  {id:'c2-3', title:'מה קורה בתוך שלב', body:()=>`
+    <p class="lead">כל שלב עובר את אותו מסלול. לחצו על כל חלק.</p>
+    <div class="anat" role="group" aria-label="חלקי השלב">${ANATOMY.map((a,i)=>`<button data-anat="${i}" aria-pressed="${i===0}">${a.t}</button>`).join('')}</div>
+    <div class="anat-panel" id="anatPanel"></div>
+    <div class="note"><b>הכלל הכי חשוב</b>שער אישור הוא החלטה, לא טקס. אם לא קראתם את התוצר – אל תאשרו.</div>`,
+    after:el=>{ const show=i=>{ el.querySelector('#anatPanel').innerHTML=`<b>${ANATOMY[i].t}</b><p style="margin:4px 0 0">${ANATOMY[i].d}</p>`; el.querySelectorAll('[data-anat]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.anat==i)); }; show(0); el.querySelectorAll('[data-anat]').forEach(b=>b.onclick=()=>show(+b.dataset.anat)); }},
+  {id:'c2-4', title:'פרופילי עבודה', body:()=>`
+    <p class="lead">פרופיל (Scope) קובע אילו שלבים רצים, באיזה עומק ואיזו אסטרטגיית בדיקות. סננו לפי העומק:</p>
+    <div class="chips" role="group" aria-label="סינון לפי עומק">${['הכול','Minimal','Standard','Comprehensive'].map((d,i)=>`<button class="chip" data-depth="${d}" aria-pressed="${i===0}">${d}</button>`).join('')}</div>
+    <div class="table-scroll"><table><thead><tr><th>פרופיל</th><th>מתאים ל</th><th>שלבים</th><th>עומק</th><th>פקודה</th></tr></thead><tbody id="profRows">
+    ${PROFILES.map(p=>`<tr data-d="${p.d}"><td><b>${p.n}</b></td><td>${p.use}</td><td class="num">${p.c} / 33</td><td>${p.d}</td><td><code>${p.cmd}</code></td></tr>`).join('')}
+    </tbody></table></div>
+    <p>לא חייבים לזכור את הטבלה: מתארים את העבודה, והסוכן מציע פרופיל ומבקש אישור לפני שמתחיל.</p>`,
+    after:el=>{ el.querySelectorAll('[data-depth]').forEach(b=>b.onclick=()=>{ el.querySelectorAll('[data-depth]').forEach(x=>x.setAttribute('aria-pressed', x===b)); el.querySelectorAll('#profRows tr').forEach(r=>r.classList.toggle('dim', b.dataset.depth!=='הכול' && r.dataset.d!==b.dataset.depth)); }); }},
+  {id:'c2-5', title:'כוונון: עומק, בדיקות וסקירה', body:()=>`
+    <p class="lead">דגלים מכווננים את הפרופיל שנבחר בלי להפוך אותו לפרופיל אחר.</p>
+    <div class="table-scroll"><table><thead><tr><th>דגל</th><th>מה הוא עושה</th></tr></thead><tbody>
+    <tr><td><code>--depth</code></td><td>minimal, standard או comprehensive – כמה מפורטים התוצרים</td></tr>
+    <tr><td><code>--test-strategy</code></td><td>minimal, standard או comprehensive – כמה בודקים</td></tr>
+    <tr><td><code>--review</code></td><td>adversarial, advisory או none – תקרת הסקירה; לא מעלה שלב מעבר למה שהוא מגדיר</td></tr>
+    <tr><td><code>--sensors</code></td><td>on או off – חיישנים שבודקים את העבודה</td></tr>
+    <tr><td><code>--learnings</code></td><td>on או off – שאלת הלקחים בסוף שלב</td></tr>
+    <tr><td><code>--guard-policy</code></td><td>strict או relaxed – הקשחת שומרים לעבודה רגישה</td></tr>
+    </tbody></table></div>
+    <p>לעבודה שלא מתאימה לשום פרופיל יש composer שמציע מסלול שלבים מותאם, ומחכה לאישור:</p>
+    ${codeBox('/aidlc compose "harden the deployment pipeline and add observability"')}`},
+  {id:'c2-6', title:'Construction: יחידות ואוטונומיה', body:()=>`
+    <p class="lead">ב-Construction העבודה מתבצעת יחידה (Unit) אחרי יחידה, עם צ'קפוינט מאומת בסוף כל אחת.</p>
+    <ul class="plain">
+    <li><b>Walking skeleton:</b> היחידה הראשונה היא הפרוסה המשולבת הקטנה ביותר שעובדת. מאשרים אותה לפני שממשיכים. מסמך עיצוב ראשון אינו skeleton.</li>
+    <li><b>כמה אוטונומיה:</b> בוחרים <i>Continue automatically</i> או <i>Review each checkpoint</i>. אפשר להעניק או לשלול אוטונומיה במפורש בכל שלב.</li>
+    <li><b>סדרתי או מקבילי:</b> Unit-major נשאר סדרתי. ריצה מקבילית (swarm) רק אם בוחרים במפורש stage-major ו-swarm.</li>
+    <li><b>אימות:</b> פקודת האימות מאושרת ע"י אדם ומשמשת בכל צ'קפוינט. החלפה שלה דורשת אישור חדש. כשל עוצר את העבודה.</li>
+    </ul>
+    <div class="note"><b>זה לב רמה 4</b>אוטונומיה מבוקרת, עם אימות שאדם הגדיר, היא מה שמאפשר לסוכן להוביל בלי לאבד שליטה.</div>`},
+  {id:'c2-7', title:'11 הסוכנים', body:()=>`
+    <p class="lead">ה-workflow מפעיל סוכנים מתמחים. כל פרסונה עובדת בעיקר מול אחד או שניים מהם.</p>
+    <div class="table-scroll"><table><thead><tr><th>סוכן</th><th>תחום</th></tr></thead><tbody>
+    ${AGENTS.map(a=>`<tr><td><b>${a[0]}</b></td><td>${a[1]}</td></tr>`).join('')}
+    </tbody></table></div>`},
+  {id:'c2-8', title:'כללים, ידע ולולאת למידה', body:()=>`
+    <p class="lead">מה שהצוות לומד צריך להפוך לכלל, כדי שהסוכן לא יחזור על אותה טעות.</p>
+    <div class="table-scroll"><table><thead><tr><th>מנגנון</th><th>מה הוא מחזיק</th><th>בעלים</th></tr></thead><tbody>
+    <tr><td><b>Rules</b></td><td>הוראות מחייבות לסוכנים</td><td>ה-CoE (ארגוני) והצוות (מקומי)</td></tr>
+    <tr><td><b>Team Knowledge</b></td><td>ידע של הצוות: סטנדרטים, design system, החלטות</td><td>הצוות</td></tr>
+    <tr><td><b>Learnings</b></td><td>לקחים שנאספים בסוף שלב</td><td>כל משתמש, וה-CoE מקדם לכללים</td></tr>
+    </tbody></table></div>
+    <div class="note coe"><b>איך מעבירים לקח ל-CoE</b>לקח שחוזר בשני צוותים או יותר נשלח ל-${esc(CONFIG.contact)} ונכנס לריפו הכללים הארגוני בגרסה הבאה.</div>`},
+  {id:'c2-9', title:'תרגיל: בחרו פרופיל', quiz:['s1','s2','s3','s4','s5','c2a','c2b'], body:()=>`
+    <p class="lead">חמישה תרחישים ושתי שאלות. בחרו את הפרופיל המתאים.</p>
+    ${['s1','s2','s3','s4','s5','c2a','c2b'].map(q=>quiz(q)).join('')}`}
+ ]},
+ {id:'c3', name:'המסלול שלך', time:'כ-30 דקות', desc:'מה ללמוד ברמה 3 וברמה 4 לפי התפקיד, תרגיל מעשי והסמכה.', steps:()=>{ const p=persona(); if(!p) return []; const k=state.persona; return [
+  {id:`c3-${k}-1`, title:'התפקיד החדש שלך', body:()=>`
+    <p class="lead">${p.change}</p>
+    <div class="table-scroll"><table><tbody>
+    <tr><th>סוכן</th><td>${p.agent}</td></tr>
+    <tr><th>פאזות עיקריות</th><td>${p.phases}</td></tr>
+    <tr><th>תרגיל מעשי</th><td>${p.ex}</td></tr>
+    <tr><th>הסמכה</th><td>${p.cert}</td></tr>
+    </tbody></table></div>`},
+  {id:`c3-${k}-2`, title:'רמה 3: מה ללמוד', body:()=>checklist(`${k}-l3`, p.l3, 'סמנו כל יכולת שתרגלתם בעבודה אמיתית. הסימון נשמר בדפדפן.')},
+  {id:`c3-${k}-3`, title:'רמה 4: מה ללמוד', body:()=>checklist(`${k}-l4`, p.l4, 'אלה היכולות שמעבירות אותך מאישור כל שלב לניהול דרך כללים, ידע ואוטונומיה.')},
+  {id:`c3-${k}-4`, title:'תרגיל והסמכה', body:()=>`
+    <p class="lead">ההסמכה מבוססת על תוצר אמיתי בפיילוט, לא על מבחן.</p>
+    <h2>התרגיל</h2><p>${p.ex}</p>
+    <h2>מה מוגש ל-CoE</h2><p>${p.cert}</p>
+    <h2>איך מגישים</h2>
+    <ul class="plain"><li>קישור לתיקיית <code>aidlc-docs</code> של ה-intent.</li><li>צילום או ייצוא של יומן ה-audit.</li><li>שני לקחים שלמדת, בשורה אחת כל אחד.</li></ul>
+    <p>שלחו ל-<b>${esc(CONFIG.contact)}</b>. ה-Champion של הצוות מאשר ראשון.</p>`},
+  {id:`c3-${k}-5`, title:'בדיקת ידע', quiz:[`p-${k}`], body:()=>`
+    <p class="lead">שאלה אחת מהעבודה היומיומית שלך.</p>${quiz(`p-${k}`)}`}
+ ];}}
+];
+Object.entries(PERSONAS).forEach(([k,v])=>QUIZ[`p-${k}`]=v.quiz);
+
+function checklist(key, items, intro){
+  const done = items.filter((_,i)=>state.checks[`${key}-${i}`]).length;
+  return `<p class="lead">${intro}</p><p class="count" id="cnt-${key}">${done} מתוך ${items.length} סומנו</p>
+  <ul class="checks">${items.map((t,i)=>`<li><label><input type="checkbox" data-check="${key}-${i}" data-group="${key}" data-total="${items.length}" ${state.checks[`${key}-${i}`]?'checked':''}><span>${t}</span></label></li>`).join('')}</ul>`;
+}
+
+/* ---------------- מצב ושמירה ---------------- */
+const state = {persona:null, current:'welcome', done:{}, answers:{}, checks:{}, name:''};
+function load(){ try{ const s=localStorage.getItem(CONFIG.storageKey); if(s) Object.assign(state, JSON.parse(s)); }catch(e){} }
+function save(){ try{ localStorage.setItem(CONFIG.storageKey, JSON.stringify(state)); }catch(e){} }
+
+function chapterSteps(ch){ return typeof ch.steps==='function' ? ch.steps() : ch.steps; }
+function flat(){ const out=[]; CHAPTERS.forEach((ch,ci)=>chapterSteps(ch).forEach((s,si)=>out.push({...s, ci, si, ch}))); return out; }
+function findStep(id){ return flat().find(s=>s.id===id); }
+function quizDone(s){ return !s.quiz || s.quiz.every(q=>QUIZ[q] && state.answers[q]===QUIZ[q].a); }
+
+/* ---------------- רינדור ---------------- */
+const $ = id => document.getElementById(id);
+
+function renderRail(){
+  const all=flat(); const cur=all.findIndex(s=>s.id===state.current);
+  $('rail').innerHTML = CHAPTERS.map((ch,ci)=>{
+    const steps=chapterSteps(ch); const isCur = cur>=0 && all[cur].ci===ci;
+    const doneN = steps.filter(s=>state.done[s.id]).length;
+    const ticks = steps.length ? steps.map(s=>`<button class="tick ${state.done[s.id]?'done':''} ${s.id===state.current?'current':''}" data-go="${s.id}" aria-label="${esc(ch.name)}: ${esc(s.title)}"></button>`).join('')
+      : `<button class="tick" data-go="welcome" aria-label="בחירת פרסונה לפתיחת הפרק"></button>`;
+    return `<div class="seg ${isCur?'is-current':''}" style="flex:${Math.max(steps.length,3)}"><div class="seg-label"><b>פרק ${ci+1}<span class="nm"> · ${ch.name}</span></b><span>${doneN}/${steps.length||'—'}</span></div><div class="ticks">${ticks}</div></div>`;
+  }).join('');
+  const total=all.length, doneAll=all.filter(s=>state.done[s.id]).length, pct=total?Math.round(doneAll/total*100):0;
+  $('rail').setAttribute('role','progressbar'); $('rail').setAttribute('aria-valuenow',pct); $('rail').setAttribute('aria-valuemin',0); $('rail').setAttribute('aria-valuemax',100); $('rail').setAttribute('aria-label','התקדמות בלומדה');
+  let here;
+  if(state.current==='welcome') here='<strong>פתיחה</strong> · בחירת פרסונה';
+  else if(state.current==='finish') here='<strong>סיום</strong> · תעודה';
+  else { const s=all[cur]; const n=chapterSteps(s.ch).length; here=`<strong>פרק ${s.ci+1}, שלב ${s.si+1} מתוך ${n}</strong> · ${esc(s.title)}`; }
+  $('where').innerHTML = `<span><span class="pin"></span>אתה כאן: ${here}</span><span>הושלמו ${pct}%</span>`;
+}
+
+function renderOutline(){
+  const parts = [`<h3>פתיחה</h3><ol><li><a href="#welcome" data-go="welcome" class="${state.current==='welcome'?'current':''} ${state.persona?'done':''}"><span class="dot"></span>בחירת פרסונה</a></li></ol>`];
+  CHAPTERS.forEach((ch,ci)=>{
+    const steps=chapterSteps(ch);
+    parts.push(`<h3>פרק ${ci+1} · ${ch.name}</h3><ol>${steps.length? steps.map(s=>`<li><a href="#${s.id}" data-go="${s.id}" class="${s.id===state.current?'current':''} ${state.done[s.id]?'done':''}"><span class="dot"></span>${esc(s.title)}</a></li>`).join('') : `<li><a href="#welcome" data-go="welcome"><span class="dot"></span>בחרו פרסונה כדי לפתוח</a></li>`}</ol>`);
+  });
+  parts.push(`<h3>סיום</h3><ol><li><a href="#finish" data-go="finish" class="${state.current==='finish'?'current':''}"><span class="dot"></span>תעודת סיום</a></li></ol>`);
+  parts.push(`<div class="outline-foot">${esc(CONFIG.version)}<br><button class="link-btn" id="resetBtn">איפוס ההתקדמות</button></div>`);
+  $('outline').innerHTML = parts.join('');
+}
+
+function renderWelcome(){
+  const resume = flat().find(s=>!state.done[s.id]);
+  $('main').innerHTML = `<section class="hero">
+    <div class="crumb">${esc(CONFIG.org)}</div>
+    <h1>AI-DLC לכל תפקיד בצוות</h1>
+    <p class="lead">הלומדה מלווה אותך במעבר ל-AI-DLC ברמות 3 ו-4: קודם התמונה הגדולה, אחר כך כל המנגנון, ובסוף מה בדיוק התפקיד שלך צריך לדעת.</p>
+    <div class="path">${CHAPTERS.map((c,i)=>`<div><div class="n">פרק ${i+1} · ${c.time}</div><div class="t">${c.name}</div><div class="d">${c.desc}</div></div>`).join('')}</div>
+    <h2>מה התפקיד שלך?</h2>
+    <p style="color:var(--muted)">הבחירה קובעת את פרק 3 ומדגישה את התפקיד שלך בפרקים הקודמים. אפשר להחליף בכל שלב.</p>
+    <div class="personas" role="radiogroup">${Object.entries(PERSONAS).map(([k,v])=>`<label class="persona"><input type="radio" name="persona" value="${k}" ${state.persona===k?'checked':''}><span><span class="pt">${v.name}</span><br><span class="pd">${v.desc}</span></span></label>`).join('')}</div>
+    <div class="btn-row"><button class="btn" id="startBtn" ${state.persona?'':'disabled'}>${resume && Object.keys(state.done).length ? 'המשך מהמקום שעצרת' : 'התחל בפרק 1'}</button>${Object.keys(state.done).length?'<button class="btn alt" id="fromStart">התחל מההתחלה</button>':''}</div>
+  </section>`;
+  $('main').querySelectorAll('input[name=persona]').forEach(r=>r.onchange=()=>{ state.persona=r.value; save(); renderChrome(); $('startBtn').disabled=false; });
+  $('startBtn').onclick=()=>{ const r=flat().find(s=>!state.done[s.id]); go(r? r.id : 'finish'); };
+  if($('fromStart')) $('fromStart').onclick=()=>go('c1-1');
+}
+
+function renderStep(s){
+  const n=chapterSteps(s.ch).length;
+  $('main').innerHTML = `<div class="crumb">פרק ${s.ci+1} · ${s.ch.name} · שלב ${s.si+1} מתוך ${n}</div><h1>${esc(s.title)}</h1>${s.body()}`;
+  $('main').querySelectorAll('[data-quiz]').forEach(el=>renderQuiz(el));
+  if(s.after) s.after($('main'));
+}
+
+function renderQuiz(el){
+  const id=el.dataset.quiz, q=QUIZ[id], ans=state.answers[id], tried=state.answers[id]!==undefined;
+  const ok = tried && ans===q.a;
+  el.innerHTML = `<div class="qq">${esc(q.q)}</div><div class="opts">${q.opts.map((o,i)=>{
+    let cls=''; if(tried && i===ans) cls = ok?'right':'wrong'; if(ok && i===q.a) cls='right';
+    return `<button class="opt ${cls}" data-opt="${i}" ${ok?'disabled':''}><span class="k">${'אבגד'[i]}</span><span>${esc(o)}</span></button>`; }).join('')}</div>
+    ${tried? `<div class="why ${ok?'':'no'}"><b>${ok?'נכון.':'לא בדיוק.'}</b> ${ok?esc(q.why):'נסו שוב – חשבו על מה שהשער או הפרופיל נועדו להבטיח.'}</div>`:''}`;
+  el.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>{ state.answers[id]=+b.dataset.opt; if(state.answers[id]===q.a){ state.firstTry = state.firstTry||{}; if(state.firstTry[id]===undefined) state.firstTry[id]=true; } else { state.firstTry=state.firstTry||{}; state.firstTry[id]=false; } save(); renderQuiz(el); renderPager(); });
+}
+
+function renderFinish(){
+  const all=flat(), done=all.filter(s=>state.done[s.id]).length, missing=all.filter(s=>!state.done[s.id]);
+  const qs=Object.keys(state.firstTry||{}), first=qs.filter(q=>state.firstTry[q]).length;
+  const p=persona(); const date=new Date().toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'});
+  $('main').innerHTML = `<div class="crumb">סיום</div><h1>${missing.length?'כמעט שם':'סיימת את הלומדה'}</h1>
+   ${missing.length? `<p class="lead">נשארו ${missing.length} שלבים. התעודה תיפתח כשכולם יושלמו.</p><ul class="plain">${missing.map(s=>`<li><a href="#${s.id}" data-go="${s.id}">פרק ${s.ci+1}: ${esc(s.title)}</a></li>`).join('')}</ul>`
+   : `<p class="lead">הצעד הבא הוא התרגיל המעשי והגשת ההסמכה ל-CoE (פרק 3, שלב 4).</p>
+   <div class="field no-print"><label for="nm">השם שיופיע בתעודה</label><input id="nm" value="${esc(state.name||'')}" autocomplete="name"></div>
+   <div class="cert"><div class="co">${esc(CONFIG.org)}</div><div class="cn" id="certName">${esc(state.name||'')}</div>
+   <div class="cd">השלים/ה את ${esc(CONFIG.course)}<br>במסלול ${p?esc(p.name):''} · ${date}</div>
+   <div class="stats"><div><strong>${done}</strong>שלבים</div><div><strong>${qs.length?Math.round(first/qs.length*100):0}%</strong>תשובות נכונות בניסיון ראשון</div></div></div>
+   <div class="btn-row no-print"><button class="btn" id="printBtn">הדפסה או שמירה כ-PDF</button></div>`}`;
+  if($('nm')) $('nm').oninput=e=>{ state.name=e.target.value; $('certName').textContent=state.name; save(); };
+  if($('printBtn')) $('printBtn').onclick=()=>window.print();
+}
+
+function renderPager(){
+  const all=flat(), i=all.findIndex(s=>s.id===state.current);
+  const prev=$('prevBtn'), next=$('nextBtn'), hint=$('hint');
+  if(state.current==='welcome'){ $('pager').style.display='none'; return; }
+  $('pager').style.display='';
+  prev.disabled=false;
+  if(state.current==='finish'){ next.style.visibility='hidden'; hint.textContent=''; return; }
+  next.style.visibility='visible';
+  const s=all[i]; const ok=quizDone(s);
+  next.disabled=!ok;
+  next.textContent = i===all.length-1 ? 'לסיום' : (s.si===chapterSteps(s.ch).length-1 ? 'לפרק הבא' : 'המשך');
+  hint.textContent = ok ? `${i+1} מתוך ${all.length}` : 'ענו נכון על השאלות כדי להמשיך';
+}
+
+function renderChrome(){
+  $('slogan').textContent=CONFIG.slogan||''; $('orgName').textContent=CONFIG.org; $('courseName').textContent=CONFIG.course;
+  const p=persona(); $('personaBtn').textContent = p ? p.short : 'בחר פרסונה';
+  $('personaBtn').setAttribute('aria-label', p ? `פרסונה: ${p.name}. לחצו להחלפה` : 'בחירת פרסונה');
+  renderRail(); renderOutline(); renderPager();
+}
+
+function render(){
+  if(state.current!=='welcome' && state.current!=='finish' && !findStep(state.current)) state.current='welcome';
+  renderChrome();
+  if(state.current==='welcome') renderWelcome();
+  else if(state.current==='finish') renderFinish();
+  else renderStep(findStep(state.current));
+}
+
+function go(id, push=true){
+  state.current=id; save(); render(); closeMenu();
+  if(push) history.replaceState(null,'','#'+id);
+  window.scrollTo({top:0}); $('main').focus({preventScroll:true});
+}
+
+/* ---------------- אירועים ---------------- */
+$('nextBtn').onclick=()=>{ const all=flat(), i=all.findIndex(s=>s.id===state.current); const s=all[i]; if(!quizDone(s)) return; state.done[s.id]=true; go(i<all.length-1 ? all[i+1].id : 'finish'); };
+$('prevBtn').onclick=()=>{ const all=flat(), i=all.findIndex(s=>s.id===state.current); if(state.current==='finish') go(all[all.length-1].id); else go(i>0?all[i-1].id:'welcome'); };
+$('personaBtn').onclick=()=>go('welcome');
+$('themeBtn').onclick=()=>{ const r=document.documentElement; const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches; r.dataset.theme = dark?'light':'dark'; try{localStorage.setItem(CONFIG.storageKey+'-theme', r.dataset.theme)}catch(e){} };
+function closeMenu(){ $('outline').classList.remove('open'); $('scrim').classList.remove('open'); $('menuBtn').setAttribute('aria-expanded','false'); }
+$('menuBtn').onclick=()=>{ const o=$('outline').classList.toggle('open'); $('scrim').classList.toggle('open',o); $('menuBtn').setAttribute('aria-expanded',o); };
+$('scrim').onclick=closeMenu;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g){ e.preventDefault(); go(g.dataset.go); return; }
+  if(e.target.id==='resetBtn'){ if(confirm('לאפס את כל ההתקדמות, התשובות והסימונים?')){ Object.assign(state,{persona:null,current:'welcome',done:{},answers:{},checks:{},name:'',firstTry:{}}); save(); go('welcome'); } return; }
+  const c=e.target.closest('[data-copy]'); if(c){ const t=c.nextElementSibling.innerText; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{c.textContent='הועתק';setTimeout(()=>c.textContent='העתקה',1500)}).catch(()=>{c.textContent='סמנו והעתיקו ידנית'}); }
+});
+document.addEventListener('change',e=>{
+  const cb=e.target.closest('[data-check]'); if(!cb) return;
+  state.checks[cb.dataset.check]=cb.checked; save();
+  const g=cb.dataset.group, tot=+cb.dataset.total; const n=[...Array(tot).keys()].filter(i=>state.checks[`${g}-${i}`]).length;
+  const el=$('cnt-'+g); if(el) el.textContent=`${n} מתוך ${tot} סומנו`;
+});
+window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(h && h!==state.current) go(h,false); });
+
+/* ---------------- הפעלה ---------------- */
+try{ const t=localStorage.getItem(CONFIG.storageKey+'-theme'); if(t) document.documentElement.dataset.theme=t; }catch(e){}
+load();
+const h=location.hash.slice(1); if(h) state.current=h;
+render();
+</script>
+</body>
+</html>
