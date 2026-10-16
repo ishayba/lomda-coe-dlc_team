@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<!--
+  © יחידת CoE AI-DLC · מחלקת הפיתוח · לשימוש פנימי בלבד · אין להוציא מהארגון.
+  לומדת AI-DLC, גרסה 1.2. התוכן אומת מול awslabs/aidlc-workflows 2.10.0 (רישיון MIT-0) ב-16.10.2026.
+-->
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -221,6 +225,23 @@ tr.dim td{opacity:.35}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 
+/* ---------- מידע לא מאומת ---------- */
+.vi{display:inline-grid;place-items:center;width:19px;height:19px;padding:0;margin-inline-start:5px;border-radius:50%;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font:italic 700 12px/1 Georgia,'Times New Roman',serif;cursor:help;vertical-align:1px}
+.vi::before{content:"i"}
+.vi:hover,.vi[aria-expanded="true"]{background:var(--accent);color:#1A1208}
+#viTip{position:fixed;z-index:90;max-width:min(300px,calc(100vw - 24px));background:var(--ink);color:var(--bg);border:1px solid var(--line);padding:10px 12px;border-radius:8px;font-size:13.5px;line-height:1.55;box-shadow:0 10px 28px rgba(0,0,0,.28);pointer-events:none}
+#viTip b{display:block;margin-bottom:3px}
+.legend{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--muted);margin:6px 0 14px}
+.sources{font-size:15px}
+.sources li{margin-bottom:6px}
+.sources a{color:var(--ink)}
+.copy-line{display:block;margin-top:4px;font-weight:500}
+.cert{background-repeat:repeat;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cert .cid{font-size:12.5px;color:var(--muted);margin-top:14px}
+.cert .cid bdi{font-family:var(--mono)}
+main:focus{outline:none}
+.cert .cc{font-size:12px;color:var(--muted);margin-top:4px}
+
 /* ---------- נגישות ---------- */
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .skip{position:absolute;top:-100px;right:12px;z-index:100;background:var(--accent);color:#1A1208;padding:10px 16px;border-radius:var(--radius-s);font-weight:600;text-decoration:none}
@@ -363,283 +384,311 @@ const CONFIG = {
   contact: 'coe-aidlc@your-org.example',
   rulesRepo: 'git.your-org.example/coe/aidlc-rules',
   slogan: 'הסוד להצלחה = "ניסיון, סקרנות ו-AI הם השילוב המנצח."',
-  version: 'גרסה 1.1 · אוקטובר 2026',
+  version: 'גרסה 1.2 · אוקטובר 2026',
+  copyright: '© יחידת CoE AI-DLC · לשימוש פנימי בלבד · אין להוציא מהארגון',
+  verified: 'אומת מול awslabs/aidlc-workflows 2.10.0 · 16.10.2026',
   unit: 'יחידת CoE AI-DLC · מחלקת הפיתוח',
-  appVersion: '1.1',
-  saved: '16.10.2026 19:53',
+  appVersion: '1.2',
+  saved: '16.10.2026 21:09',
   storageKey: 'aidlc-lomda-v1'
 };
 
-/* ---------------- נתוני תוכן ---------------- */
+/* ---------------- נתוני תוכן ----------------
+   אומת מול awslabs/aidlc-workflows גרסה 2.10.0 (README, docs/guide 00, 04, 06, 12, workflow-profiles) – 16.10.2026.
+   כל טענה שלא אומתה מסומנת ב-ui('...') ומוצגת כ-ⓘ "מידע מורחב ולא מאומת".
+*/
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ui = note => `<button type="button" class="vi" data-note="${esc(note)}" aria-label="מידע מורחב ולא מאומת: ${esc(note)}"></button>`;
+const quiz = id => `<div class="quiz" data-quiz="${id}"></div>`;
+const codeBox = txt => `<div class="code-box"><button class="copy" data-copy>העתקה</button><pre><code>${esc(txt)}</code></pre></div>`;
+const persona = () => PERSONAS[state.persona];
+
+const SOURCES = [
+  ['README הריפו','https://github.com/awslabs/aidlc-workflows','התקנה, כלים נתמכים, מספרי מפתח (גרסה 2.10.0)'],
+  ['Introduction','https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/00-introduction.md','מבנה, מצב ו-audit'],
+  ['Phases and Stages','https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/04-phases-and-stages.md','33 השלבים, Construction ושערי אימות'],
+  ['Agents','https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/06-agents.md','11 הסוכנים, הסוקרים וה-composer (תקציר דפי הסוכנים)'],
+  ['CLI Commands','https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/12-cli-commands.md','דגלים, ידע, חיישנים ולקחים'],
+  ['Workflow Profiles','https://awslabs.github.io/aidlc-workflows/guide/workflow-profiles/','11 הפרופילים ומספרי השלבים']
+];
+
 const PHASES = [
-  {name:'אתחול', en:'Initialization', range:'0.1–0.3', count:3,
-   what:'הקמת מרחב העבודה וקובץ המצב, הבנת הפרויקט והגדרת ה-intent. כאן נקבע גם ה-scope (הפרופיל) שיקבע את המשך הדרך.',
-   who:'מי שפותח את העבודה – לרוב מפתח/ת או PO.'},
-  {name:'Ideation', en:'Ideation', range:'1.1–1.7', count:7,
-   what:'חקירת הבעיה לפני שמתחייבים לפתרון: מחקר שוק, היתכנות וגבולות ה-scope. פרופילים כמו Classic ו-Express מדלגים עליה.',
-   who:'PO/PM עם Product Agent.'},
-  {name:'Inception', en:'Inception', range:'2.1–2.9', count:9,
-   what:'מה בונים ולמה: דרישות, סיפורי משתמש, דרישות לא פונקציונליות, עיצוב ופירוק העבודה ליחידות (Units).',
-   who:'PO, UX, ארכיטקט/ית וראש צוות.'},
-  {name:'Construction', en:'Construction', range:'3.1–3.7', count:7,
-   what:'איך בונים: עיצוב לכל יחידה, יצירת קוד, Build and Test ו-CI Pipeline, בצ\'קפוינטים מאומתים. כשל באימות עוצר את העבודה.',
-   who:'מפתחים, QA ו-DevOps.'},
-  {name:'Operation', en:'Operation', range:'4.1–4.7', count:7,
-   what:'פריסה, observability, תגובה לתקלות, ביצועים ומשוב שחוזר לפיתוח. זו הפאזה שמבדילה בפועל בין רמה 3 לרמה 4.',
-   who:'DevOps/Platform, אבטחה ו-Operations Agent.'}
+  {name:'אתחול', range:'0.1–0.3', count:3,
+   what:'שלושה שלבים שרצים אוטומטית ובלי שער אישור: Workspace Scaffold, Workspace Detection ו-State Initialization. נוצרת תיקיית הרשומה של ה-intent וקובץ המצב aidlc-state.md.',
+   who:'אף אחד – זה קורה לבד בהפעלה הראשונה של /aidlc.'},
+  {name:'Ideation', range:'1.1–1.7', count:7,
+   what:'אימות היוזמה: Intent Capture, Market Research, Feasibility & Constraints, Scope Definition, Team Formation, Rough Mockups ו-Approval & Handoff. חלק מהשלבים מותנים, ופרופילים כמו bugfix ו-refactor מדלגים עליהם.',
+   who:'Product, Architect, Delivery ו-Design Agents.'},
+  {name:'Inception', range:'2.1–2.9', count:9,
+   what:'פירוט הדרישות: Reverse Engineering (רק בפרויקט קיים), Practices Discovery, Requirements Analysis, User Stories, Refined Mockups, Domain Design, Units Generation, Contract Design ו-Delivery Planning.',
+   who:'Product, Architect, Developer, Design, Delivery ו-Pipeline & Deploy Agents.'},
+  {name:'Construction', range:'3.1–3.7', count:7,
+   what:'בנייה: Functional Design, NFR Requirements, NFR Design, Infrastructure Design ו-Code Generation לכל יחידה, ואחר כך Build and Test ו-CI Pipeline פעם אחת בסוף.',
+   who:'Architect, AWS Platform, Developer, Quality ו-Pipeline & Deploy Agents.'},
+  {name:'Operation', range:'4.1–4.7', count:7,
+   what:'Deployment Pipeline, Environment Provisioning, Deployment Execution, Observability Setup, Incident Response, Performance Validation ו-Feedback & Optimization. כל השלבים מותנים, וב-MVP וב-PoC הפאזה כולה יכולה לרדת. שלב 4.7 מחזיר משוב ל-Ideation.',
+   who:'Pipeline & Deploy, AWS Platform, Operations ו-Quality Agents.'}
 ];
 
 const ANATOMY = [
-  {t:'שאלות הבהרה', d:'הסוכן מתחיל בשאלות. כדאי לענות במלואן ולציין הנחות – תשובה חלקית מייצרת תוצר שיידחה בשער.'},
-  {t:'תוכנית', d:'לפני יצירה הסוכן מציג תוכנית לאישור (Plan Approval). רק את/ה יכול/ה לכבות את האישור הזה.'},
-  {t:'תוצר', d:'הסוכן כותב את התוצר לתיקייה aidlc-docs. זה מקור האמת – לא הצ\'אט.'},
-  {t:'סקירה', d:'סוקר (reviewer) בודק את התוצר. בסקירה advisory הממצאים מוצגים בשער; בסקירה adversarial הסוקר מנסה לשבור את התוצר.'},
-  {t:'שער אישור', d:'את/ה מאשר/ת או מבקש/ת שינויים. ההחלטה נרשמת ביומן ה-audit, ורק אחריה עוברים לשלב הבא.'},
-  {t:'לקחים', d:'בסוף שלב הסוכן שואל אם יש מה להוסיף לפעם הבאה. מה שעונים כאן נכנס ללולאת הלמידה והופך לכלל.'}
+  {t:'שאלות הבהרה', d:'הסוכן המוביל שואל שאלות. ב-Intent Capture, למשל, הנחות שנשארו פתוחות דורשות אישור מפורש לפני שהסקירה והשער רצים.'},
+  {t:'תוצרים', d:'הסוכן כותב את התוצרים לתיקיית ה-intent (aidlc/spaces/&lt;space&gt;/intents/…). בחלק מהשלבים סוכנים תומכים כותבים קובצי תרומה, והמוביל מאחד אותם.'},
+  {t:'חיישנים', d:'Sensors הם בדיקות דטרמיניסטיות שרצות אחרי כל כתיבה לתוצר. שישה מגיעים עם המערכת: claim-sources, required-sections, upstream-coverage, traceability, linter ו-type-check.'},
+  {t:'סקירה', d:'סוקר נפרד קורא את התוצר בלי לראות את התוכנית של מי שבנה אותו, ונותן ציון READY או NOT-READY. בסקירה advisory הממצאים מוצגים בשער; בסקירה adversarial הבונה מתקן והסוקר בודק שוב, עד 2 סבבים כברירת מחדל.'},
+  {t:'שער אישור', d:'את/ה מאשר/ת או מבקש/ת שינויים, וההחלטה נרשמת ב-audit. הסוקר לעולם לא חוסם – לאדם המילה האחרונה.'},
+  {t:'לקחים', d:'מהיומן של השלב (memory.md) עולים לקחים מועמדים, ואת/ה בוחר/ת מה לשמור. לקחים שאושרו נכתבים ל-memory/team.md או project.md ומשפיעים מה-workflow הבא.', note:'בתיעוד יש שני תיאורים לסדר: פרק Agents ממקם את הלקחים לפני שער האישור, ופרק CLI אחרי שהשלב אושר.'}
 ];
 
 const PROFILES = [
-  {n:'Classic', c:18, d:'Standard', t:'Standard', use:'טקס בנוסח v1: Inception ו-Construction עם אישור לכל שלב, עד Build and Test', cmd:'/aidlc classic'},
-  {n:'Express', c:10, d:'Minimal', t:'Minimal', use:'הדרך הקצרה מדרישות לקוד ובדיקות, כשהדרישות ברורות', cmd:'/aidlc express'},
-  {n:'Feature', c:33, d:'Standard', t:'Standard', use:'פיצ\'ר ייצורי עם מחזור החיים המלא', cmd:'/aidlc feature'},
-  {n:'Enterprise', c:33, d:'Comprehensive', t:'Comprehensive', use:'עבודה מוסדרת או בסיכון גבוה, עם עקיבות מלאה', cmd:'/aidlc enterprise'},
-  {n:'MVP', c:23, d:'Standard', t:'Standard', use:'אינקרמנט מוצר אמיתי ראשון, בלי פאזת Operation', cmd:'/aidlc mvp'},
-  {n:'Proof of concept', c:8, d:'Minimal', t:'Minimal', use:'בדיקת היתכנות במסלול המימוש הקטן ביותר', cmd:'/aidlc poc'},
-  {n:'Bugfix', c:9, d:'Minimal', t:'Minimal', use:'באג ידוע שצריך תיקון ממוקד ובדיקת רגרסיה', cmd:'/aidlc bugfix'},
-  {n:'Refactor', c:10, d:'Minimal', t:'Minimal', use:'שיפור קוד קיים בלי לשנות התנהגות', cmd:'/aidlc refactor'},
-  {n:'Infrastructure', c:13, d:'Standard', t:'Standard', use:'סביבות, IaC, תשתיות פריסה או עבודת עלויות', cmd:'/aidlc infra'},
-  {n:'Security patch', c:10, d:'Minimal', t:'Minimal', use:'CVE או חולשה ממוקדת', cmd:'/aidlc security-patch'},
-  {n:'Workshop', c:26, d:'Standard', t:'Minimal', use:'הדרכה או סשן קבוצתי בהנחיה', cmd:'/aidlc workshop'}
+  {n:'Classic', c:18, d:'Standard', r:'advisory', use:'טקס בנוסח v1: Inception ו-Construction עם אישור לכל שלב, עד Build and Test', cmd:'/aidlc classic'},
+  {n:'Express', c:10, d:'Minimal', r:'ללא סקירה', use:'הדרך הקצרה מדרישות לקוד ובדיקות, כשהדרישות ברורות', cmd:'/aidlc express'},
+  {n:'Feature', c:33, d:'Standard', r:'לפי השלב', use:'פיצ\'ר ייצורי עם מחזור החיים המלא', cmd:'/aidlc feature'},
+  {n:'Enterprise', c:33, d:'Comprehensive', r:'לפי השלב', use:'עבודה מוסדרת או בסיכון גבוה, עם עקיבות מלאה', cmd:'/aidlc enterprise'},
+  {n:'MVP', c:23, d:'Standard', r:'לפי השלב', use:'אינקרמנט מוצר אמיתי ראשון, בלי פאזת Operation', cmd:'/aidlc mvp'},
+  {n:'Proof of concept', c:8, d:'Minimal', r:'advisory', use:'בדיקת היתכנות במסלול המימוש הקטן ביותר', cmd:'/aidlc poc'},
+  {n:'Bugfix', c:9, d:'Minimal', r:'advisory', use:'באג ידוע שצריך תיקון ממוקד ובדיקת רגרסיה', cmd:'/aidlc bugfix'},
+  {n:'Refactor', c:10, d:'Minimal', r:'לפי השלב', use:'שיפור קוד קיים בלי לשנות התנהגות', cmd:'/aidlc refactor'},
+  {n:'Infrastructure', c:13, d:'Standard', r:'לפי השלב', use:'סביבות, IaC, תשתיות פריסה או עבודת עלויות', cmd:'/aidlc infra'},
+  {n:'Security patch', c:10, d:'Minimal', r:'לפי השלב', use:'CVE או חולשה ממוקדת', cmd:'/aidlc security-patch'},
+  {n:'Workshop', c:26, d:'Standard', r:'advisory', use:'הדרכה או סשן קבוצתי בהנחיה', cmd:'/aidlc workshop'}
 ];
 
 const AGENTS = [
-  ['Product Agent','חזון, intent, סיפורי משתמש וקריטריוני קבלה'],
-  ['Design Agent','זרימות, מסכים ועקרונות עיצוב'],
-  ['Delivery Agent','תכנון יחידות, סדר העבודה וצ\'קפוינטים'],
-  ['Architect Agent','ארכיטקטורה, NFRs ועיצוב יחידות'],
-  ['AWS Platform Agent','שירותי AWS והחלטות פלטפורמה'],
-  ['Compliance Agent','דרישות רגולציה ועקיבות'],
-  ['DevSecOps Agent','אבטחה לאורך המחזור'],
-  ['Developer Agent','יצירת קוד ומימוש'],
-  ['Quality Agent','אסטרטגיית בדיקות ואימות'],
-  ['Pipeline & Deploy Agent','CI/CD ופריסה'],
-  ['Operations Agent','ניטור, תקלות ומשוב תפעולי']
+  ['Product Agent','דרישות, סיפורי משתמש, scope ומחקר שוק','Intent Capture, Requirements Analysis, User Stories'],
+  ['Design Agent','UX/UI, wireframes, עיצוב אינטראקציה ונגישות','Rough Mockups, Refined Mockups'],
+  ['Delivery Agent','הרכב הצוות, קיבולת ורצף האספקה','Team Formation, Delivery Planning'],
+  ['Architect Agent','Domain design, NFRs ופירוק לרכיבים – 10 שלבים, המעורבות הרחבה ביותר','Domain Design, Units Generation, Functional Design'],
+  ['AWS Platform Agent','תשתית AWS, CDK/CloudFormation ועלויות','Infrastructure Design, Environment Provisioning'],
+  ['Compliance Agent','רגולציה, סיווג מידע והערכת סיכונים','תומך בלבד, אין שלבים שהוא מוביל'],
+  ['DevSecOps Agent','Threat modeling, סריקות אבטחה ו-DevSecOps','תומך בלבד, אין שלבים שהוא מוביל'],
+  ['Developer Agent','מימוש קוד וניתוח קוד קיים','Reverse Engineering, Code Generation'],
+  ['Quality Agent','אסטרטגיית בדיקות, יצירת בדיקות וביצועים','Build and Test, Performance Validation'],
+  ['Pipeline & Deploy Agent','CI/CD, אסטרטגיית פריסה ו-rollback','Practices Discovery, CI Pipeline, Deployment'],
+  ['Operations Agent','Observability, תקלות, SLO ומשוב','Observability Setup, Incident Response, Feedback'],
+  ['product-lead (סוקר)','סוקר דרישות, סיפורים ו-mockups','לא מייצר תוצרים'],
+  ['architecture-reviewer (סוקר)','סוקר עיצוב טכני ו-Code Generation','לא מייצר תוצרים'],
+  ['composer','מציע מסלול שלבים מותאם לפי הערכת אי-הוודאות של המשימה','/aidlc compose']
 ];
 
 const PERSONAS = {
-  pm: {name:'מנהל/ת מוצר', short:'PO/PM', desc:'Vision, intent וסיפורי משתמש',
+  pm: {name:'מנהל/ת מוצר', short:'PO/PM', desc:'Intent, דרישות וסיפורי משתמש',
     agent:'Product Agent', phases:'Ideation, Inception',
-    change:'במקום מסמך דרישות ארוך את/ה כותב/ת Vision ו-intent ברורים, עונה לשאלות הסוכן ומאשר/ת או דוחה את סיפורי המשתמש שהוא מייצר. האחריות על "מה ולמה" נשארת אצלך; העבודה הידנית עוברת לסוכן.',
-    l3:['לכתוב Vision Document לפי המדריך שבתיעוד ה-workflow','לנסח intent אחד ברור לכל יחידת עבודה','לענות לשאלות ה-Product Agent במלואן, כולל הנחות','לאשר או לדחות סיפורי משתמש בשער, עם נימוק כתוב'],
-    l4:['להריץ Ideation מלא: מחקר שוק, היתכנות וגבולות scope','לנסח קריטריוני קבלה כך שה-Quality Agent יבדוק אותם אוטומטית','להגדיר מתי ה-intent עובר לפרופיל Feature או Enterprise','לקרוא משוב מפאזת Operation ולהפוך אותו ל-intent הבא'],
+    change:'במקום מסמך דרישות ארוך את/ה מנסח/ת intent ברור, עונה לשאלות הסוכן ומאשר/ת או דוחה את הדרישות וסיפורי המשתמש שהוא מייצר. האחריות על "מה ולמה" נשארת אצלך; העבודה הידנית עוברת לסוכן.',
+    l3:['לפתוח עבודה ב-/aidlc &lt;תיאור&gt; ולאשר את הפרופיל שהמערכת מציעה','לאשר במפורש הנחות שנשארו פתוחות ב-Intent Capture','לסקור Requirements Analysis ו-User Stories יחד עם ממצאי הסוקר product-lead','לאשר או לבקש שינויים בשער, עם נימוק כתוב'],
+    l4:['להריץ Ideation מלא: Market Research, Feasibility ו-Scope Definition',`לנסח קריטריוני קבלה שיהפכו לבדיקות ב-Build and Test ${ui('התיעוד מתאר את ה-Quality Agent כמי שמגדיר בדיקות ושערי איכות, אבל לא מתאר המרה אוטומטית של קריטריוני קבלה שכתב ה-PO לבדיקות.')}`,'להחליט מתי עבודה עוברת לפרופיל Feature או Enterprise','לקרוא את תוצרי Feedback & Optimization (4.7) ולפתוח מהם מחזור חדש'],
     ex:'קחו feature אמיתי מה-backlog, נסחו אותו כ-intent והעבירו אותו עד סוף Inception.',
-    cert:'intent שעבר Inception בלי יותר משני סבבי דחייה.',
-    quiz:{q:'הסוכן הציג סיפורי משתמש שחסר בהם קריטריון קבלה מרכזי. מה עושים בשער?',opts:['מאשרים ומתקנים אחר כך בקוד','מבקשים שינוי ומסבירים בדיוק מה חסר','מדלגים לשלב הבא ומעדכנים את הצוות'],a:1,why:'השער הוא המקום לתקן. מה שעובר אותו הופך לבסיס לכל השלבים הבאים, ותיקון מאוחר עולה הרבה יותר.'}},
-  ux: {name:'מעצב/ת UX', short:'UX', desc:'זרימות, מסכים ו-design system',
-    agent:'Design Agent', phases:'Inception',
-    change:'את/ה מכוונ/ת את הסוכן בעקרונות העיצוב ומאשר/ת את הזרימות שהוא מציע. ברמה 4 ה-design system עצמו הופך לידע של הצוות, כך שכל intent חדש יורש אותו.',
-    l3:['להזין לסוכן עקרונות עיצוב וקישור ל-design system','לסקור את הזרימות שה-Design Agent מציע ולאשר בשער','לזהות מתי הצעה של הסוכן סותרת את ה-design system ולבקש שינוי'],
-    l4:['לקודד את ה-design system כ-Team Knowledge','להגדיר כללי נגישות כחלק מהכללים הארגוניים','למדוד כמה הצעות עיצוב עוברות שער בסבב ראשון'],
-    ex:'קחו זרימת מסך אחת והעבירו אותה מ-intent ועד אישור בשער.',
-    cert:'קובץ ידע עיצובי שאושר ע"י ה-CoE ונמצא בשימוש בפיילוט.',
-    quiz:{q:'איך מוודאים שכל intent חדש יורש את ה-design system בלי להזכיר אותו כל פעם?',opts:['מדביקים אותו בתחילת כל שיחה','מקודדים אותו כ-Team Knowledge','מוסיפים אותו כהערה בקוד'],a:1,why:'Team Knowledge נטען אוטומטית לכל intent של הצוות. זה מה שהופך העדפה אישית לסטנדרט.'}},
-  arch: {name:'ארכיטקט/ית', short:'Architect', desc:'NFRs, עיצוב יחידות וכללים',
-    agent:'Architect Agent, AWS Platform Agent', phases:'Inception, Construction',
-    change:'את/ה מגדיר/ה את הסביבה הטכנית, הדרישות הלא פונקציונליות והכללים שהסוכנים עובדים לפיהם, ומאשר/ת את עיצוב היחידות. ברמה 4 ההחלטות שלך הופכות לכללים ארגוניים.',
-    l3:['לכתוב Technical Environment Document','לאשר פירוק ליחידות (Units) ו-NFRs בשער','להבין walking skeleton: היחידה הראשונה היא הפרוסה המשולבת הקטנה ביותר שעובדת'],
-    l4:['לכתוב כללים ארגוניים ולהזין את לולאת הלמידה','לבחור בין Unit-major (סדרתי) ל-stage-major עם swarm','להוביל עבודה בפרופיל Infrastructure','להשתמש ב-/aidlc compose לעבודה שלא מתאימה לפרופיל קיים'],
-    ex:'פרקו מערכת קיימת ליחידות, עם walking skeleton מאושר לפני היחידה השנייה.',
-    cert:'סט כללים ארגוני אחד שעבר ל-CoE ונמצא בשימוש בשני צוותים.',
-    quiz:{q:'מתי Code Generation רץ במקביל (swarm)?',opts:['תמיד, כברירת מחדל','רק כשבוחרים במפורש stage-major ו-swarm','רק בפרופיל Express'],a:1,why:'ברירת המחדל היא יחידה אחת בכל פעם. Unit-major נשאר סדרתי; מקביליות דורשת בחירה מפורשת.'}},
-  dev: {name:'מפתח/ת', short:'Developer', desc:'פרופילים, תוכניות וקוד שנוצר',
-    agent:'Developer Agent', phases:'Construction',
-    change:'את/ה בוחר/ת פרופיל, מאשר/ת תוכניות, בודק/ת את הקוד שנוצר ומזין/ה לקחים. פחות הקלדה, יותר החלטות – ואחריות מלאה על מה שמגיע ל-production.',
-    l3:['לבחור פרופיל נכון: Express, Bugfix, Refactor, Classic','לאשר תוכנית (Plan Approval) אחרי שקראת אותה','לסקור קוד שנוצר כמו קוד של עמית','להמשיך עבודה מ-session קודם בעזרת aidlc-state.md'],
-    l4:['להעניק ולשלול אוטונומיה ב-Construction','לבחור Continue automatically או Review each checkpoint','לכתוב לקחים בסוף שלב','להשתמש ב-/aidlc compose ובדגלי --depth ו---test-strategy'],
+    cert:'intent שעבר Inception בלי יותר משני סבבי בקשת שינויים.',
+    quiz:{q:'הסוכן הציג סיפורי משתמש שחסר בהם קריטריון קבלה מרכזי. מה עושים בשער?',opts:['מאשרים ומתקנים אחר כך בקוד','מבקשים שינוי ומסבירים בדיוק מה חסר','מדלגים לשלב הבא ומעדכנים את הצוות'],a:1,why:'השער הוא המקום לתקן. מה שעובר אותו הופך לבסיס לשלבים הבאים, ובין פאזות רץ גם שער אימות שבודק שכל דרישה ממופה לסיפור.'}},
+  ux: {name:'מעצב/ת UX', short:'UX', desc:'Mockups, זרימות ו-design system',
+    agent:'Design Agent', phases:'Ideation, Inception',
+    change:'את/ה מכוונ/ת את הסוכן בעקרונות העיצוב ומאשר/ת את ה-mockups והזרימות שהוא מציע. ברמה 4 ה-design system הופך לידע של הצוות, כך שכל intent חדש יורש אותו.',
+    l3:['לסקור Rough Mockups (1.6) ו-Refined Mockups (2.5)','לקרוא את ממצאי הסוקר product-lead על ה-mockups','לבקש שינוי כשהצעה סותרת את ה-design system'],
+    l4:['להוסיף את ה-design system לידע של הסוכן: aidlc/knowledge/aidlc-design-agent/','להגדיר כללי נגישות כחלק מהידע הארגוני',`למדוד כמה הצעות עיצוב עוברות בשער בסבב הראשון ${ui('מדד מוצע של ה-CoE; לא חלק מהתיעוד.')}`],
+    ex:'קחו זרימת מסך אחת והעבירו אותה מ-intent ועד אישור Refined Mockups.',
+    cert:'קובץ ידע עיצובי שאושר על ידי ה-CoE ונמצא בשימוש בפיילוט.',
+    quiz:{q:'איך מוודאים שכל intent חדש יורש את ה-design system בלי להזכיר אותו כל פעם?',opts:['עורכים את קובץ הסוכן שמגיע עם המערכת','מוסיפים אותו לתיקיית הידע aidlc/knowledge/aidlc-design-agent/','מדביקים אותו בתחילת כל שיחה'],a:1,why:'ידע הצוות נטען לסוכן בכל workflow. את קובצי הסוכנים שמגיעים עם המערכת לא עורכים, כי הם נדרסים בכל שדרוג.'}},
+  arch: {name:'ארכיטקט/ית', short:'Architect', desc:'Domain design, NFRs ויחידות',
+    agent:'Architect Agent, AWS Platform Agent', phases:'Ideation, Inception, Construction',
+    change:'את/ה מאשר/ת את העיצוב, הדרישות הלא פונקציונליות והפירוק ליחידות, וקובע/ת את הכללים שהסוכנים עובדים לפיהם. ברמה 4 ההחלטות שלך הופכות לכללים ולידע של הצוות.',
+    l3:['לאשר Domain Design, Units Generation ו-Contract Design','להבין walking skeleton: ה-Bolt הראשון, שהשער שלו נפתח בשלב הראשון של Construction','לקרוא את ממצאי הסוקר architecture-reviewer'],
+    l4:['לכתוב כללים ל-memory/team.md ולהזין את לולאת הלמידה','להחליט בין stage-major (ברירת המחדל) ל-unit-major, ומתי לאפשר Code Generation מקבילי','להוביל עבודה בפרופיל infra','להשתמש ב-/aidlc compose לעבודה שלא מתאימה לפרופיל קיים'],
+    ex:'פרקו מערכת קיימת ליחידות, עם walking skeleton מאושר לפני שממשיכים.',
+    cert:'סט כללים אחד שעבר ל-CoE ונמצא בשימוש בשני צוותים.',
+    quiz:{q:'מה סדר העבודה ברירת המחדל ב-Construction?',opts:['stage-major: כל שלב רץ לכל היחידות, ואז השלב הבא','unit-major: יחידה אחת מקצה לקצה, ואז הבאה','כל השלבים לכל היחידות במקביל'],a:0,why:'stage-major הוא ברירת המחדל. unit-major הוא בחירה מפורשת, והוא מבטל ריצה מקבילית אבל שומר שער לכל שלב.'}},
+  dev: {name:'מפתח/ת', short:'Developer', desc:'פרופילים, קוד שנוצר ואוטונומיה',
+    agent:'Developer Agent', phases:'Inception, Construction',
+    change:'את/ה בוחר/ת פרופיל, בודק/ת את הקוד שנוצר, מחליט/ה כמה אוטונומיה לתת ומאשר/ת לקחים. פחות הקלדה, יותר החלטות – ואחריות מלאה על מה שמגיע לייצור.',
+    l3:['לבחור פרופיל נכון: express, bugfix, refactor או classic','לסקור קוד שנוצר כמו קוד של עמית','להמשיך עבודה קיימת עם /aidlc (בחירה בין המשך, חזרה על שלב, קפיצה או התחלה מחדש)','להריץ שלב בודד עם /aidlc --stage &lt;slug&gt; --single'],
+    l4:['להחליט ב-ladder prompt אם להמשיך את Construction באופן אוטונומי או לעצור בכל שלב','לטפל בכשל Code Generation: retry, skip או abort','לאשר לקחים מתוך יומן השלב','להשתמש ב-compose ובדגלים --depth ו---test-strategy'],
     ex:'Bugfix אחד, Refactor אחד ו-Feature אחד, כל אחד מקצה לקצה.',
-    cert:'שלושה intents שהגיעו ל-production עם audit trail מלא.',
-    quiz:{q:'יש באג ידוע בזמן הקצוב של ההתחברות. איזה פרופיל?',opts:['Feature','Bugfix','Enterprise','Workshop'],a:1,why:'Bugfix מריץ 9 שלבים בעומק Minimal: הבנת הסביבה, דרישות, קוד, Build and Test ופריסה, בלי טקס מיותר.'}},
+    cert:'שלושה intents שהגיעו לייצור עם audit מלא.',
+    quiz:{q:'יש באג ידוע בזמן הקצוב של ההתחברות. איזה פרופיל?',opts:['Feature','Bugfix','Enterprise','Workshop'],a:1,why:'Bugfix מיועד לתיקון ממוקד ובדיקת רגרסיה, עם מספר שלבים קטן וסקירה advisory.'}},
   qa: {name:'QA', short:'QA', desc:'אסטרטגיית בדיקות ואימות',
-    agent:'Quality Agent', phases:'Construction',
-    change:'את/ה מגדיר/ה כמה בודקים ואיך, ומאמת/ת שהשלב Build and Test באמת מוכיח את הדרישות. ברמה 4 האיכות נמדדת ברציפות דרך Sensors ופאזת Operation.',
-    l3:['להגדיר test strategy: Minimal, Standard או Comprehensive','לאמת את שלב Build and Test','לקרוא ממצאי reviewer ולהחליט מה חוסם'],
-    l4:['להשתמש ב-Sensors כאמצעי איכות רציף','לשלב בדיקות ביצועים בפאזת Operation','להגדיר אסטרטגיית בדיקות ברירת מחדל לכל פרופיל ביחידה'],
-    ex:'קחו intent קיים, הריצו אותו שוב עם test strategy מקיפה יותר והשוו את התוצאות.',
+    agent:'Quality Agent', phases:'Inception, Construction, Operation',
+    change:'את/ה קובע/ת כמה בודקים ואיך, ומאמת/ת שהשלב Build and Test באמת מוכיח את הדרישות. ברמה 4 האיכות נבדקת ברציפות דרך חיישנים ו-Performance Validation.',
+    l3:['לבחור test strategy: Minimal (בדיקה אחת לכל דרישה, כ-5 עד 15), Standard (5 עד 8 לכל רכיב, unit ו-integration) או Comprehensive (10 עד 15 לכל רכיב, כל הסוגים)','לאמת את שלב Build and Test (3.6)','לקרוא ממצאי סוקרים ולהחליט מה חוסם'],
+    l4:[`לעקוב אחרי תוצאות החיישנים ולהגדיר אילו מהם חוסמים בשער ${ui('התיעוד מתאר בדיקה של חיישנים חוסמים בכניסה לשער, אבל לא אימתתי איך מגדירים חיישן כחוסם.')}`,'להוביל Performance Validation (4.6)','לקבוע ברירת מחדל לאסטרטגיית הבדיקות לכל פרופיל ביחידה'],
+    ex:'קחו intent קיים, הריצו אותו עם --test-strategy comprehensive והשוו את התוצאות.',
     cert:'אסטרטגיית בדיקות לפרופיל Feature שאומצה כברירת מחדל ביחידה.',
-    quiz:{q:'רוצים בדיקות מקיפות יותר ל-intent בפרופיל Feature, בלי להחליף פרופיל. מה עושים?',opts:['עוברים ל-Enterprise','מוסיפים --test-strategy comprehensive','מכבים את הסוקרים'],a:1,why:'הדגלים מכווננים את הפרופיל שנבחר בלי להפוך אותו לפרופיל אחר.'}},
-  ops: {name:'DevOps / Platform', short:'DevOps', desc:'CI/CD, סביבות ו-Operation',
-    agent:'Pipeline & Deploy Agent, Operations Agent', phases:'Construction, Operation',
-    change:'את/ה מחבר/ת את ה-workflow לסביבות, ל-pipeline ולניטור. ברמה 4 את/ה אחראי/ת שהמשוב מהייצור יחזור לסוכנים ולא ייתקע בטיקטים.',
-    l3:['להתקין ולעדכן את הכללים בכל כלי שהצוות משתמש בו','לחבר את שלבי הפריסה','לוודא שפקודת האימות מאושרת ע"י אדם'],
-    l4:['להקים CI Pipeline ו-Sensors','להפעיל את פאזת Operation במלואה: observability ותגובה לתקלות','להזרים משוב תפעולי חזרה ל-Construction'],
-    ex:'הריצו intent בפרופיל Infrastructure שמקים סביבה ו-pipeline.',
-    cert:'pipeline ייצורי שמזין Sensors בפיילוט.',
-    quiz:{q:'איזה פרופיל מתאים להקמת סביבת staging ב-IaC?',opts:['Infrastructure','MVP','Refactor'],a:0,why:'Infrastructure מריץ 13 שלבים שמתמקדים בדרישות, NFRs, עיצוב תשתית, CI/CD, פריסה ו-observability.'}},
-  sec: {name:'אבטחה ו-Compliance', short:'Security', desc:'רגולציה, audit ומדיניות',
-    agent:'DevSecOps Agent, Compliance Agent', phases:'כל הפאזות',
-    change:'את/ה הופך/ת דרישות רגולציה ואבטחה לכללים שהסוכנים מקיימים בעצמם, ובודק/ת את ה-audit trail במקום לרדוף אחרי תיעוד.',
-    l3:['לקרוא יומן audit של intent ולהבין מי אישר מה','לקבוע מתי פרופיל Enterprise הוא חובה','לטפל ב-CVE בפרופיל Security patch'],
-    l4:['לקודד דרישות רגולציה ככללים לסוכני Compliance ו-DevSecOps','להחמיר Guard Policy לעבודה רגישה (--guard-policy strict)','לבדוק commit provenance'],
+    quiz:{q:'רוצים בדיקות מקיפות יותר ל-intent בפרופיל Feature, בלי להחליף פרופיל. מה עושים?',opts:['עוברים ל-Enterprise','מוסיפים --test-strategy comprehensive','מכבים את הסוקרים'],a:1,why:'הדגל משנה את אסטרטגיית הבדיקות בלי להחליף פרופיל, ונרשם ב-audit כ-TEST_STRATEGY_CHANGED.'}},
+  ops: {name:'DevOps / Platform', short:'DevOps', desc:'התקנה, CI/CD ו-Operation',
+    agent:'Pipeline & Deploy Agent, Operations Agent', phases:'Inception, Construction, Operation',
+    change:'את/ה מתקין/ה ומתחזק/ת את AI-DLC בסביבה, ומחבר/ת אותו ל-pipeline ולניטור. ברמה 4 את/ה אחראי/ת שהמשוב מהייצור יחזור לסוכנים ולא ייתקע בטיקטים.',
+    l3:['להתקין עם aidlc config --harness &lt;כלי&gt; ולבדוק עם aidlc doctor','לנעול גרסה ולהתקין ממראה פנימי לפי מדריך Install and Lifecycle','להוביל Practices Discovery ו-Deployment Pipeline'],
+    l4:['להקים CI Pipeline (3.7) ולחבר את החיישנים','להפעיל את Operation במלואה: Observability, Incident Response','להזרים את Feedback & Optimization חזרה ל-Ideation'],
+    ex:'הריצו intent בפרופיל infra שמקים סביבה ו-pipeline.',
+    cert:'pipeline ייצורי מחובר לפיילוט, עם תוצאות חיישנים.',
+    quiz:{q:'איזה פרופיל מתאים להקמת סביבת staging ב-IaC?',opts:['Infrastructure','MVP','Refactor'],a:0,why:'Infrastructure מיועד לסביבות, IaC ותשתיות פריסה.'}},
+  sec: {name:'אבטחה ו-Compliance', short:'Security', desc:'רגולציה, audit וחיישנים',
+    agent:'DevSecOps Agent, Compliance Agent', phases:'Ideation עד Operation',
+    change:'שני הסוכנים שלך תומכים בלבד – הם משתתפים בשלבים שאחרים מובילים. לכן העבודה שלך היא להכניס את דרישות הרגולציה והאבטחה לידע ולכללים, ולבדוק את ה-audit במקום לרדוף אחרי תיעוד.',
+    l3:['לקרוא את ה-audit של intent ולהבין מי אישר מה','לקבוע מתי פרופיל Enterprise הוא חובה','לטפל ב-CVE בפרופיל security-patch'],
+    l4:['להוסיף דרישות רגולציה לידע של aidlc-compliance-agent ו-aidlc-devsecops-agent','לוודא שעקיפת חיישן חוסם נעשית רק בהחלטה אנושית מתועדת – ובמצב אוטונומי היא לא אפשרית',`לבדוק התנגשויות בין כללי הצוות למדיניות הארגונית ב-aidlc --doctor ${ui('ה-doctor מדווח על חפיפה בין כללי צוות ל-org policy, אבל לא אימתתי איך מגדירים את שכבת ה-org policy.')}`],
     ex:'Security patch אחד ו-intent אחד בפרופיל Enterprise.',
-    cert:'מדיניות פרופילים לפי סיווג מידע, מאושרת וכתובה ככללים.',
-    quiz:{q:'התגלה CVE בספרייה. מה המסלול הנכון?',opts:['Security patch','Enterprise','Proof of concept'],a:0,why:'Security patch נועד לחולשה ממוקדת. Enterprise מתאים לתוכנית אבטחה או Compliance רחבה.'}},
-  lead: {name:'ראש צוות / Delivery', short:'Delivery', desc:'יחידות, צ\'קפוינטים ואוטונומיה',
-    agent:'Delivery Agent', phases:'Inception, Construction',
-    change:'את/ה מתכנן/ת את היחידות והצ\'קפוינטים ומחליט/ה כמה אוטונומיה לתת לסוכן. ברמה 4 את/ה מודד/ת את הצוות לפי זמן מ-intent ל-production.',
-    l3:['לתכנן intents ויחידות','לעקוב אחרי מצב העבודה בקובץ המצב','לנהל כמה משתתפים על אותה עבודה'],
-    l4:['לקבוע מדיניות אוטונומיה וצ\'קפוינטים לצוות','להוביל Multi-Team Construction','למדוד זמן intent-to-production'],
+    cert:'מדיניות פרופילים לפי סיווג מידע, כתובה כידע וככללים.',
+    quiz:{q:'התגלה CVE בספרייה. מה המסלול הנכון?',opts:['Security patch','Enterprise','Proof of concept'],a:0,why:'Security patch נועד לחולשה ממוקדת. Enterprise מתאים לעבודה מוסדרת רחבה.'}},
+  lead: {name:'ראש צוות / Delivery', short:'Delivery', desc:'יחידות, Bolts ואוטונומיה',
+    agent:'Delivery Agent', phases:'Ideation, Inception',
+    change:'את/ה מתכנן/ת את היחידות וה-Bolts, ומחליט/ה כמה אוטונומיה לתת לסוכנים. ברמה 4 את/ה מנהל/ת כמה צוותים על אותו intent ומודד/ת תוצאות.',
+    l3:['לאשר Team Formation ו-Delivery Planning (bolt-plan)','לעקוב אחרי ההתקדמות עם /aidlc --status','להבין שערי אימות בין פאזות'],
+    l4:['לקבוע מדיניות צוות ל-ladder prompt: אוטונומי או שער בכל שלב','להוביל Multi-Team Construction: --claim, unit publish, pin, gate ו-land','להפיק דוחות עם /aidlc-replay ו-/aidlc-outcomes-pack',`למדוד זמן מ-intent לייצור ${ui('מדד מוצע של ה-CoE; לא חלק מהתיעוד.')}`],
     ex:'ספרינט אחד שבו כל העבודה החדשה עוברת דרך AI-DLC.',
-    cert:'דוח ספרינט עם מדדי ה-CoE.',
-    quiz:{q:'מה ההבדל בין Continue automatically ל-Review each checkpoint?',opts:['האם הסוכן עובר בין צ\'קפוינטים בלי לעצור לבדיקה שלך','איזה מודל AI רץ','האם נוצרות בדיקות'],a:0,why:'זו ההחלטה כמה אוטונומיה לתת. אפשר להעניק או לשלול אותה במפורש במהלך Construction.'}},
+    cert:'דוח ספרינט עם מדדי ה-CoE ו-OUTCOMES.md.',
+    quiz:{q:'מה עושה ה-ladder prompt?',opts:['מחליט פעם אחת אם להמשיך את Construction באופן אוטונומי או לעצור לשער בכל שלב','בוחר את מודל ה-AI','קובע את מספר הבדיקות'],a:0,why:'הוא מופיע פעם אחת אחרי שער ה-walking skeleton, והתשובה נשמרת ב-aidlc-state.md כ-Construction Autonomy Mode.'}},
   exec: {name:'הנהלה וספונסרים', short:'הנהלה', desc:'מדדים ואישור מעבר רמה',
-    agent:'אין – צורכים דשבורד ודוחות', phases:'—',
-    change:'את/ה לא מפעיל/ה סוכנים. התפקיד שלך הוא לבקש את המדדים הנכונים, להבין מה audit trail מוכיח, ולאשר מעבר רמה רק על סמך נתונים.',
-    l3:['להבין מה ההבדל בין רמה 3 לרמה 4','לדעת אילו מדדים לבקש מה-CoE','לקרוא audit trail ברמה כללית'],
-    l4:['לאשר מעבר לרמה 4 לפי מדדים בשני ספרינטים רצופים','לוודא שפאזת Operation ומשוב אכן פועלים','לממן ולתעדף את צוות ה-CoE'],
+    agent:'אין – צורכים דוחות', phases:'—',
+    change:'את/ה לא מפעיל/ה סוכנים. התפקיד שלך הוא לבקש את המדדים הנכונים, להבין מה ה-audit מוכיח, ולאשר מעבר רמה רק על סמך נתונים.',
+    l3:['להבין מה ההבדל בין רמה 3 לרמה 4','לדעת אילו מדדים לבקש מה-CoE','לקרוא דוח OUTCOMES.md של intent'],
+    l4:[`לאשר מעבר לרמה 4 לפי מדדים בשני ספרינטים רצופים ${ui('הסף של שני ספרינטים הוא הצעת ה-CoE.')}`,'לוודא שפאזת Operation ומשוב אכן פועלים','לממן ולתעדף את צוות ה-CoE'],
     ex:'השתתפו בסקירת פיילוט אחת של ה-CoE.',
     cert:'אישור מתועד על מעבר רמה של יחידה אחת.',
-    quiz:{q:'איזו ראיה מצדיקה הכרזה על יחידה ברמה 4?',opts:['כל המפתחים קיבלו רישיון לכלי AI','מדדי רמה 4 התקיימו בשני ספרינטים רצופים, כולל Operation ומשוב','הצוות סיים את הלומדה'],a:1,why:'רמה היא התנהגות מדודה לאורך זמן, לא רכישה ולא הדרכה.'}},
-  coe: {name:'צוות ה-CoE', short:'CoE', desc:'הנחיה, הנדסת harness וממשל',
+    quiz:{q:'איזו ראיה מצדיקה הכרזה על יחידה ברמה 4?',opts:['כל המפתחים קיבלו רישיון לכלי AI','מדדים שהתקיימו לאורך זמן, כולל Operation ומשוב','הצוות סיים את הלומדה'],a:1,why:'רמה היא התנהגות מדודה לאורך זמן, לא רכישה ולא הדרכה.'}},
+  coe: {name:'צוות ה-CoE', short:'CoE', desc:'התקנה, הנחיה והרחבת ה-workflow',
     agent:'כל הסוכנים', phases:'כל הפאזות',
-    change:'את/ה הבעלים של הכללים הארגוניים, ההסמכה וההחלטה על מעבר רמה. ברמה 4 את/ה גם מפתח/ת את ה-workflow עצמו: שלבים, scopes, sensors ו-plugins.',
-    l3:['להנחות לפי Facilitator Guide ו-Workshop Mode','לתמוך ולפתור תקלות לפי מדריך ה-Troubleshooting','לנעול גרסת workflow לכל היחידות'],
-    l4:['להוסיף שלבים וסוכנים לפי Harness Engineer Guide','להגדיר Scopes מותאמים ו-Team Knowledge','לפתח plugins ו-Sensors ארגוניים'],
+    change:'את/ה הבעלים של הגרסה, הידע והכללים הארגוניים, ושל ההחלטה על מעבר רמה. ברמה 4 את/ה גם מרחיב/ה את ה-workflow עצמו: שלבים, סוכנים, scopes, חיישנים ו-plugins.',
+    l3:['לנעול גרסה ולהפיץ התקנה ממראה פנימי','להנחות Workshop Mode ו-Multi-Team Construction','לאבחן תקלות עם aidlc doctor ו---doctor --export'],
+    l4:['להרחיב את ה-workflow לפי Harness Engineer Guide: שלבים, סוכנים, כללים, חיישנים וידע','לנהל plugins: /aidlc plugin list, select ו-sync','להקים space לכל צוות עם /aidlc space-create'],
     ex:'הנחו סדנת Workshop לצוות פיילוט.',
-    cert:'plugin או scope ארגוני אחד שנמצא בשימוש בשתי יחידות לפחות.',
-    quiz:{q:'צוות צריך שלב בדיקת נגישות שאין ב-workflow. מה עושה ה-CoE?',opts:['מבקש מהצוות להזכיר לסוכן בכל פעם','מוסיף שלב או plugin לפי Harness Engineer Guide בריפו הארגוני','מחכה לגרסה הבאה של AWS'],a:1,why:'ה-workflow בנוי להרחבה. שינוי ארגוני נכנס פעם אחת לריפו הכללים ומגיע לכל הצוותים.'}}
+    cert:'plugin, scope או חיישן ארגוני אחד שנמצא בשימוש בשתי יחידות לפחות.',
+    quiz:{q:'צוות צריך שלב בדיקת נגישות שאין ב-workflow. מה עושה ה-CoE?',opts:['מבקש מהצוות להזכיר לסוכן בכל פעם','מוסיף שלב או plugin לפי Harness Engineer Guide','מחכה לגרסה הבאה של AWS'],a:1,why:'ה-workflow בנוי להרחבה בלי קוד: שלבים, סוכנים, scopes, כללים, חיישנים וידע.'}}
 };
 
 const QUIZ = {
-  c1a:{q:'מה קורה בשער האישור בסוף שלב?',opts:['הסוכן ממשיך לבד אם אין שגיאות','אדם מאשר את התוצר או מבקש שינויים, וההחלטה נרשמת','השער קיים רק בפרופיל Enterprise'],a:1,why:'AI-DLC בנוי על Human-in-the-loop: ה-AI מציע, אדם מאשר.'},
+  c1a:{q:'מה קורה בשער האישור בסוף שלב?',opts:['הסוכן ממשיך לבד אם אין שגיאות','אדם מאשר את התוצר או מבקש שינויים, וההחלטה נרשמת','השער קיים רק בפרופיל Enterprise'],a:1,why:'AI-DLC בנוי על אישור אנושי: ה-AI מציע, אדם מאשר, וכל החלטה נרשמת ב-audit.'},
   c1b:{q:'כמה שלבים יש ב-workflow המלא, ובכמה פאזות?',opts:['18 שלבים בשלוש פאזות','33 שלבים בחמש פאזות','11 שלבים בארבע פאזות'],a:1,why:'אתחול, Ideation, Inception, Construction ו-Operation – 33 שלבים. כל פרופיל מריץ חלק מהם.'},
-  c1c:{q:'מה מבדיל בפועל בין רמה 4 לרמה 3?',opts:['החלפת כלי הקוד','מחזור חיים מלא כולל Operation, אוטונומיה מבוקרת וכללים ארגוניים','כתיבת יותר בדיקות יחידה'],a:1,why:'ברמה 3 האדם מאשר כל שלב. ברמה 4 ה-AI מוביל את המחזור, והאדם מנהל דרך כללים, חיישנים וידע.'},
-  s1:{q:'תרחיש: תיקון באג ידוע בתהליך ההתחברות.',opts:['Bugfix','Feature','Workshop','MVP'],a:0,why:'באג ידוע ותיקון ממוקד – Bugfix, 9 שלבים.'},
-  s2:{q:'תרחיש: שירות אישורי תשלום במערכת מוסדרת.',opts:['Express','Classic','Enterprise','Proof of concept'],a:2,why:'רגולציה וסיכון גבוה – Enterprise, 33 שלבים בעומק Comprehensive.'},
-  s3:{q:'תרחיש: לבדוק מהר אם ספרייה חדשה בכלל עובדת אצלנו.',opts:['Feature','Proof of concept','Infrastructure','Refactor'],a:1,why:'השאלה היא היתכנות – PoC, 8 שלבים. התוצר הוא ראיה להחלטה, לא קוד לייצור.'},
-  s4:{q:'תרחיש: פיצ\'ר חיפוש חדש לייצור, כולל ניטור ומשוב.',opts:['Express','MVP','Feature','Bugfix'],a:2,why:'פיצ\'ר ייצורי עם מחזור מלא כולל Operation – Feature. MVP מדלג על Operation.'},
-  s5:{q:'תרחיש: הקמת סביבת staging ב-IaC.',opts:['Infrastructure','Security patch','Classic','Workshop'],a:0,why:'סביבות ו-IaC – Infrastructure, 13 שלבים.'},
-  c2a:{q:'איפה נשמר ה-scope והשלב הנוכחי של העבודה?',opts:['בהיסטוריית הצ\'אט','בקובץ aidlc-state.md','בהודעת ה-commit'],a:1,why:'קובץ המצב הוא מה שמאפשר להמשיך עבודה ב-session חדש או בכלי אחר.'},
-  c2b:{q:'מה קורה ב-Construction כשהאימות של יחידה נכשל?',opts:['הסוכן ממשיך ליחידה הבאה','העבודה נעצרת','הכשל נרשם ומטופל רק בסוף'],a:1,why:'כשלים עוצרים את העבודה, גם כשניתנה אוטונומיה.'}
+  c1c:{q:'לפי הגדרת ה-CoE, מה מבדיל בין רמה 4 לרמה 3?',opts:['החלפת כלי הקוד','מחזור חיים מלא כולל Operation, אוטונומיה מבוקרת וידע ארגוני','כתיבת יותר בדיקות יחידה'],a:1,why:'ברמה 3 האדם מאשר כל שלב. ברמה 4 ה-AI מוביל את המחזור, והאדם מנהל דרך ידע, כללים, חיישנים ושערים מרכזיים.'},
+  s1:{q:'תרחיש: תיקון באג ידוע בתהליך ההתחברות.',opts:['Bugfix','Feature','Workshop','MVP'],a:0,why:'באג ידוע ותיקון ממוקד – Bugfix.'},
+  s2:{q:'תרחיש: שירות אישורי תשלום במערכת מוסדרת.',opts:['Express','Classic','Enterprise','Proof of concept'],a:2,why:'רגולציה וסיכון גבוה – Enterprise, כל 33 השלבים בעומק Comprehensive.'},
+  s3:{q:'תרחיש: לבדוק מהר אם ספרייה חדשה בכלל עובדת אצלנו.',opts:['Feature','Proof of concept','Infrastructure','Refactor'],a:1,why:'השאלה היא היתכנות – PoC. התוצר הוא ראיה להחלטה, לא קוד לייצור.'},
+  s4:{q:'תרחיש: פיצ\'ר חיפוש חדש לייצור, כולל ניטור ומשוב.',opts:['Express','MVP','Feature','Bugfix'],a:2,why:'פיצ\'ר ייצורי עם מחזור מלא כולל Operation – Feature. ב-MVP פאזת Operation יורדת.'},
+  s5:{q:'תרחיש: הקמת סביבת staging ב-IaC.',opts:['Infrastructure','Security patch','Classic','Workshop'],a:0,why:'סביבות ו-IaC – Infrastructure.'},
+  c2a:{q:'איפה נשמר ה-scope והשלב הנוכחי של העבודה?',opts:['בהיסטוריית הצ\'אט','בקובץ aidlc-state.md של ה-intent','בהודעת ה-commit'],a:1,why:'קובץ המצב מאפשר להמשיך ב-session חדש. /aidlc בלי פרמטרים קורא אותו ומציע להמשיך.'},
+  c2b:{q:'מה קורה ב-Construction כש-Code Generation של יחידה נכשל, גם במצב אוטונומי?',opts:['הסוכן ממשיך ליחידה הבאה','העבודה נעצרת ומוצעות האפשרויות retry, skip או abort','הכשל נרשם ומטופל רק בסוף'],a:1,why:'כשלים תמיד עוצרים את Construction, גם כשניתנה אוטונומיה.'}
 };
-
-/* ---------------- עזרי תצוגה ---------------- */
-const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const quiz = (id, label) => `<div class="quiz" data-quiz="${id}"></div>`;
-const codeBox = txt => `<div class="code-box"><button class="copy" data-copy>העתקה</button><pre><code>${esc(txt)}</code></pre></div>`;
-const persona = () => PERSONAS[state.persona];
 
 /* ---------------- פרקים ושלבים ---------------- */
 const CHAPTERS = [
  {id:'c1', name:'המדריך המקוצר', time:'כ-20 דקות', desc:'מה זה AI-DLC, חמש הפאזות ומה המשמעות של רמות 3 ו-4.', steps:[
   {id:'c1-1', title:'מה זה AI-DLC', body:()=>`
-    <p class="lead">AI-DLC (AI-Driven Development Life Cycle) היא מתודולוגיה בקוד פתוח של AWS Labs, שמנחה סוכני קוד AI לעבוד בשלבים מובנים – כשאדם מאשר כל החלטה קריטית.</p>
-    <p>זה לא עוזר שמשלים שורות קוד. זה מחזור חיים שלם: מהרעיון, דרך דרישות ועיצוב, קוד ובדיקות, ועד פריסה ותפעול. הסוכן עושה את רוב העבודה; הצוות מחליט.</p>
-    <p>המתודולוגיה מופצת כקבצי כללים (markdown) בריפו <code>awslabs/aidlc-workflows</code>, ועובדת עם כלים שונים: Claude Code, Kiro, Cursor, Codex, GitHub Copilot ו-Amazon Q Developer.</p>
+    <p class="lead">AI-DLC (AI-Driven Development Life Cycle) היא מתודולוגיה של AWS שמארגנת פיתוח בעזרת AI לפאזות קבועות ועקיבות – כשאדם מאשר כל החלטה קריטית.</p>
+    <p>זה לא עוזר שמשלים שורות קוד. זה מחזור חיים שלם: מהרעיון, דרך דרישות ועיצוב, קוד ובדיקות, ועד פריסה ותפעול. הסוכנים עושים את רוב העבודה; הצוות מחליט.</p>
+    <div class="table-scroll"><table><thead><tr><th>במספרים (גרסה 2.10)</th><th></th></tr></thead><tbody>
+    <tr><td>פאזות ושלבים</td><td>5 פאזות, 33 שלבים</td></tr>
+    <tr><td>סוכנים</td><td>14: אחד-עשר מומחי תחום, 2 סוקרים ו-composer</td></tr>
+    <tr><td>פרופילי עבודה</td><td>11</td></tr>
+    <tr><td>כלים נתמכים</td><td>Claude Code, Kiro CLI, Kiro IDE, Codex CLI, Cursor, opencode, GitHub Copilot</td></tr>
+    </tbody></table></div>
     <div class="note coe"><b>למה ה-CoE מוביל את זה</b>בלי שפה ותהליך משותפים, כל צוות משתמש ב-AI אחרת והתוצאות לא ניתנות להשוואה. הלומדה הזו היא הבסיס המשותף.</div>`},
   {id:'c1-2', title:'ארבעה עקרונות', body:()=>`
     <p class="lead">ארבעה עקרונות מסבירים כמעט כל החלטה ב-workflow.</p>
     <div class="table-scroll"><table><thead><tr><th>עיקרון</th><th>מה זה אומר בפועל</th></tr></thead><tbody>
-    <tr><td><b>אדם בלולאה</b></td><td>ה-AI מציע, אדם מאשר. כל שלב נגמר בשער אישור.</td></tr>
-    <tr><td><b>מקור אמת אחד</b></td><td>כל התוצרים נכתבים לתיקייה <code>aidlc-docs</code> ולקובץ המצב – לא נשארים בצ'אט.</td></tr>
-    <tr><td><b>אדפטיבי</b></td><td>לא כל עבודה עוברת את כל 33 השלבים. פרופיל (Scope) קובע אילו שלבים ובאיזה עומק.</td></tr>
-    <tr><td><b>בלתי תלוי בכלי</b></td><td>אותם כללים רצים בכלים שונים, כך שהצוות לא נעול על כלי אחד.</td></tr>
-    </tbody></table></div>`},
+    <tr><td><b>אדם בלולאה</b></td><td>ה-AI מציע, אדם מאשר. כמעט כל שלב נגמר בשער אישור.</td></tr>
+    <tr><td><b>הכול מתועד</b></td><td>תוצרים, מצב ו-audit נשמרים בתיקיית ה-intent – לא נשארים בצ'אט.</td></tr>
+    <tr><td><b>אדפטיבי</b></td><td>לא כל עבודה עוברת את כל 33 השלבים. פרופיל (scope) קובע אילו שלבים ובאיזה עומק.</td></tr>
+    <tr><td><b>ליבה אחת, כלים רבים</b></td><td>אותו מנוע רץ בכל הכלים הנתמכים, כך שהצוות לא נעול על כלי אחד.</td></tr>
+    </tbody></table></div>
+    <p>הגישה היא "Small Mob, Broad Agents": מעט סוכנים רחבים במקום הרבה מומחים צרים, כמו צוות קטן של 3–5 אנשים שמכסה פיצ'ר שלם.</p>`},
   {id:'c1-3', title:'חמש הפאזות', body:()=>`
     <p class="lead">33 השלבים מחולקים לחמש פאזות. לחצו על פאזה כדי לראות מה קורה בה.</p>
     <div class="phases" role="group" aria-label="פאזות">${PHASES.map((p,i)=>`<button class="phase-btn" data-phase="${i}" aria-pressed="${i===0}"><span class="pn">${p.name}</span><span class="pr">${p.range}</span><span class="bar"></span></button>`).join('')}</div>
     <div class="panel" id="phasePanel"></div>
-    <p>הסדר קבוע, אבל לא חייבים לעבור בכל הפאזות. פרופיל Bugfix, למשל, מדלג על Ideation ועל רוב העיצוב.</p>`,
+    <p>הפאזות רצות לפי הסדר. בין פאזה לפאזה רץ שער אימות שבודק עקיבות – למשל שכל דרישה ממופה לסיפור – לפני שהשלבים הבאים נבנים עליה.</p>`,
     after:el=>{ const show=i=>{ const p=PHASES[i]; el.querySelector('#phasePanel').innerHTML=`<h4>${p.name} · שלבים ${p.range} (${p.count})</h4><p>${p.what}</p><p style="margin:0;color:var(--muted)">מי מעורב: ${p.who}</p>`; el.querySelectorAll('[data-phase]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.phase==i)); }; show(0); el.querySelectorAll('[data-phase]').forEach(b=>b.onclick=()=>show(+b.dataset.phase)); }},
   {id:'c1-4', title:'התפקיד שלך משתנה', body:()=>{ const p=persona(); return `
     <p class="lead">בכל התפקידים אותו מעבר: מ"מבצעים" ל"מכוונים ומאשרים".</p>
     ${p?`<div class="note"><b>בתור ${p.name}</b>${p.change}<br><span style="color:var(--muted)">הסוכן שמולו תעבוד/י: ${p.agent} · פאזות עיקריות: ${p.phases}</span></div>`:''}
-    <div class="table-scroll"><table><thead><tr><th>פרסונה</th><th>סוכן AI-DLC</th><th>פאזות עיקריות</th></tr></thead><tbody>
+    <div class="table-scroll"><table><thead><tr><th>פרסונה ${ui('השיוך בין תפקיד בארגון לסוכן הוא פרשנות של ה-CoE. התיעוד מגדיר את הסוכנים ואת השלבים שהם מובילים, לא את התפקידים בארגון.')}</th><th>סוכן AI-DLC</th><th>פאזות עיקריות</th></tr></thead><tbody>
     ${Object.entries(PERSONAS).map(([k,v])=>`<tr${k===state.persona?' style="background:var(--accent-soft)"':''}><td>${v.name}</td><td>${v.agent}</td><td>${v.phases}</td></tr>`).join('')}
     </tbody></table></div>`;}},
   {id:'c1-5', title:'רמות 3 ו-4', body:()=>`
-    <p class="lead">רמה 3: ה-AI מציע, האדם מאשר בכל שער. רמה 4: ה-AI מוביל את המחזור כולו, כולל תפעול, והאדם מנהל דרך כללים, חיישנים וידע.</p>
+    <p class="lead">רמה 3: ה-AI מציע, האדם מאשר בכל שער. רמה 4: ה-AI מוביל את המחזור כולו, כולל תפעול, והאדם מנהל דרך ידע, כללים, חיישנים ושערים מרכזיים. ${ui('אין ל-AWS מודל רמות רשמי ל-AI-DLC. זו הגדרה שה-CoE הציע על בסיס מודלי בשלות כלליים של AI-SDLC, ויש לאשר אותה בארגון.')}</p>
     <div class="table-scroll"><table><thead><tr><th>ממד</th><th>רמה 3 · AI-assisted</th><th>רמה 4 · AI-native</th></tr></thead><tbody>
     <tr><td>מי מוביל</td><td>האדם, ה-AI מציע תוצרים</td><td>ה-AI, האדם מגדיר כוונה ומאשר בשערים מרכזיים</td></tr>
-    <tr><td>פרופילים</td><td>Classic, Express, Bugfix, MVP</td><td>Feature, Enterprise, Infrastructure, compose</td></tr>
+    <tr><td>פרופילים</td><td>classic, express, bugfix, mvp</td><td>feature, enterprise, infra, compose</td></tr>
     <tr><td>פאזות</td><td>Inception ו-Construction</td><td>כל 33 השלבים, כולל Operation ומשוב</td></tr>
-    <tr><td>שערים</td><td>אישור אנושי בכל שלב</td><td>Plan Approval וצ'קפוינטים, אוטונומיה ו-swarm</td></tr>
-    <tr><td>איכות</td><td>סקירה advisory, בדיקות Standard</td><td>Sensors, סקירה adversarial, Guard Policy, לולאת למידה</td></tr>
-    <tr><td>ידע</td><td>כללי ברירת המחדל של הריפו</td><td>Team Knowledge, כללים ו-plugins ארגוניים</td></tr>
-    </tbody></table></div>
-    <div class="note coe"><b>הערת ה-CoE</b>ל-AWS אין מודל רמות רשמי ל-AI-DLC. ההגדרה כאן נשענת על מודל הבשלות AI-SDLC (AI-assisted ו-AI-native) ומתורגמת ליכולות של ה-workflow.</div>`},
+    <tr><td>Construction</td><td>שער אחרי כל שלב</td><td>מצב אוטונומי אחרי walking skeleton, וריצה מקבילית של יחידות</td></tr>
+    <tr><td>איכות</td><td>סקירה advisory</td><td>סקירה adversarial וחיישנים חוסמים</td></tr>
+    <tr><td>ידע</td><td>ברירות המחדל של המערכת</td><td>ידע צוות לכל סוכן, כללים נלמדים ו-plugins ארגוניים</td></tr>
+    </tbody></table></div>`},
   {id:'c1-6', title:'בדיקת ידע', quiz:['c1a','c1b','c1c'], body:()=>`
     <p class="lead">שלוש שאלות לסיום הפרק המקוצר. אפשר לנסות שוב עד שעונים נכון.</p>
     ${quiz('c1a')}${quiz('c1b')}${quiz('c1c')}`}
  ]},
- {id:'c2', name:'המדריך המלא', time:'כ-60 דקות', desc:'התקנה, מבנה הקבצים, מה קורה בתוך שלב, פרופילים, Construction וסוכנים.', steps:[
+ {id:'c2', name:'המדריך המלא', time:'כ-60 דקות', desc:'התקנה, מבנה הקבצים, מה קורה בתוך שלב, פרופילים, Construction, סוכנים וידע.', steps:[
   {id:'c2-1', title:'התקנה והרצה ראשונה', body:()=>`
-    <p class="lead">מתקינים פעם אחת לכל ריפו: מעתיקים שתי תיקיות כללים למקום שהכלי שלכם קורא מתוכו.</p>
-    <ul class="plain"><li><code>aws-aidlc-rules</code> – ה-workflow המרכזי.</li><li><code>aws-aidlc-rule-details</code> – פירוט לכל פאזה ושלב.</li></ul>
-    <p>דוגמה ל-Kiro, מתוך התיעוד הרשמי:</p>
-    ${codeBox('cp -R ~/Downloads/aidlc-rules/aws-aidlc-rules .kiro/steering/\ncp -R ~/Downloads/aidlc-rules/aws-aidlc-rule-details .kiro/')}
-    <p>ל-Amazon Q Developer:</p>
-    ${codeBox('cp -R ~/Downloads/aidlc-rules/aws-aidlc-rules .amazonq/rules/')}
-    <p>לכלים אחרים (Claude Code, Cursor, Codex ועוד) יש מדריך נפרד בתיעוד. אחרי ההתקנה מתחילים עבודה בתיאור שלה:</p>
+    <p class="lead">מגרסה 2 ההתקנה היא פקודה אחת שמוסיפה את הפקודה aidlc, ואז מגדירים כל פרויקט פעם אחת לכלי שלכם.</p>
+    <p>macOS, Linux או WSL:</p>
+    ${codeBox('curl -fsSL https://github.com/awslabs/aidlc-workflows/releases/latest/download/install.sh | sh')}
+    <p>Windows PowerShell (חלון רגיל, לא כמנהל):</p>
+    ${codeBox('irm https://github.com/awslabs/aidlc-workflows/releases/latest/download/install.ps1 | iex')}
+    <p>הגדרת הפרויקט ובדיקת תקינות, מתיקיית השורש שלו:</p>
+    ${codeBox('cd /path/to/your-project\naidlc config --harness claude\naidlc doctor')}
+    <p>במקום <code>claude</code> אפשר <code>kiro</code>, <code>kiro-ide</code>, <code>codex</code>, <code>cursor</code>, <code>opencode</code> או <code>copilot</code>. אחר כך פותחים את הכלי ומתארים את העבודה:</p>
     ${codeBox('/aidlc Fix the login timeout bug')}
-    <div class="note coe"><b>בארגון שלנו</b>אל תורידו גרסה ישירות מ-GitHub. השתמשו בגרסה הנעולה מריפו הכללים הארגוני: <code>${esc(CONFIG.rulesRepo)}</code>.</div>`},
+    <p>ב-Codex CLI הפקודה היא <code>$aidlc</code>. אם אין פרופיל מוגדר ואין התאמה, ברירת המחדל היא classic.</p>
+    <div class="note coe"><b>בארגון שלנו</b>אל תתקינו ישירות מ-GitHub. השתמשו בגרסה הנעולה ובמראה הפנימי של ה-CoE: <code>${esc(CONFIG.rulesRepo)}</code>. מדריך Install and Lifecycle בתיעוד מסביר נעילת גרסה, התקנה בלי רשת ושימוש במראה.</div>`},
   {id:'c2-2', title:'מבנה הקבצים', body:()=>`
-    <p class="lead">שלושה דברים חשוב להכיר בפרויקט: הכללים, התוצרים וקובץ המצב.</p>
-    ${codeBox('project/\n├── .aidlc-rule-details/     # פירוט כללים לפי פאזה\n│   ├── inception/\n│   ├── construction/\n│   └── operations/\n└── aidlc-docs/              # כל התוצרים: דרישות, עיצוב, תוכניות\n    ├── aidlc-state.md       # scope, שלב נוכחי, החלטות\n    ├── inception/\n    └── construction/')}
-    <div class="table-scroll"><table><thead><tr><th>קובץ / תיקייה</th><th>למה הוא חשוב</th></tr></thead><tbody>
-    <tr><td><code>aidlc-docs</code></td><td>מקור האמת. מה שלא נכתב כאן לא קרה.</td></tr>
-    <tr><td><code>aidlc-state.md</code></td><td>שומר את ה-scope, השלב הנוכחי וההגדרות. מאפשר להמשיך ב-session חדש.</td></tr>
-    <tr><td>יומן audit</td><td>מי אישר מה ומתי. זו הראיה לבשלות ולעמידה ברגולציה.</td></tr>
+    <p class="lead">כל העבודה נשמרת תחת התיקייה aidlc בפרויקט: spaces לצוותים, ובתוכם intent לכל יחידת עבודה.</p>
+    ${codeBox('aidlc/\n└── spaces/<space>/\n    ├── memory/          # team.md, project.md – כללים ולקחים\n    ├── knowledge/       # ידע ומסמכים של הצוות\n    ├── codekb/          # ידע על הקוד מ-Reverse Engineering\n    └── intents/<YYMMDD>-<label>/\n        ├── aidlc-state.md   # scope, שלב נוכחי, הגדרות\n        ├── audit/           # כל החלטה ואירוע\n        ├── inception/ ...   # תוצרים לכל פאזה שרצה\n        └── verification/')}
+    <div class="table-scroll"><table><thead><tr><th>מה</th><th>למה זה חשוב</th></tr></thead><tbody>
+    <tr><td><code>aidlc-state.md</code></td><td>שומר את ה-scope, השלב הנוכחי ואת מצב האוטונומיה. /aidlc בלי פרמטרים קורא אותו ומציע להמשיך, לחזור על שלב, לקפוץ או להתחיל מחדש.</td></tr>
+    <tr><td><code>audit/</code></td><td>כל החלטה נרשמת, כך שאפשר לדעת מי אישר מה ומתי. זו הראיה לבשלות ולעמידה ברגולציה.</td></tr>
+    <tr><td><code>memory/</code></td><td>כללים ולקחים שהצוות אישר. משפיעים על ה-workflows הבאים.</td></tr>
+    <tr><td><code>/aidlc --status</code></td><td>תמונת מצב לקריאה בלבד: פאזה, שלב, התקדמות ו-scope.</td></tr>
     </tbody></table></div>`},
   {id:'c2-3', title:'מה קורה בתוך שלב', body:()=>`
-    <p class="lead">כל שלב עובר את אותו מסלול. לחצו על כל חלק.</p>
+    <p class="lead">רוב השלבים עוברים את אותו מסלול. לחצו על כל חלק. ${ui('הסדר כאן הוא מודל הוראה שבנה ה-CoE מפרקי Phases, Agents ו-CLI. הסדר המדויק תלוי בסוג השלב (inline, subagent, pipeline או mob) ובשאלה אם מוגדר לו סוקר.')}</p>
     <div class="anat" role="group" aria-label="חלקי השלב">${ANATOMY.map((a,i)=>`<button data-anat="${i}" aria-pressed="${i===0}">${a.t}</button>`).join('')}</div>
     <div class="anat-panel" id="anatPanel"></div>
     <div class="note"><b>הכלל הכי חשוב</b>שער אישור הוא החלטה, לא טקס. אם לא קראתם את התוצר – אל תאשרו.</div>`,
-    after:el=>{ const show=i=>{ el.querySelector('#anatPanel').innerHTML=`<b>${ANATOMY[i].t}</b><p style="margin:4px 0 0">${ANATOMY[i].d}</p>`; el.querySelectorAll('[data-anat]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.anat==i)); }; show(0); el.querySelectorAll('[data-anat]').forEach(b=>b.onclick=()=>show(+b.dataset.anat)); }},
+    after:el=>{ const show=i=>{ const a=ANATOMY[i]; el.querySelector('#anatPanel').innerHTML=`<b>${a.t}</b><p style="margin:4px 0 0">${a.d}${a.note?' '+ui(a.note):''}</p>`; el.querySelectorAll('[data-anat]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.anat==i)); }; show(0); el.querySelectorAll('[data-anat]').forEach(b=>b.onclick=()=>show(+b.dataset.anat)); }},
   {id:'c2-4', title:'פרופילי עבודה', body:()=>`
-    <p class="lead">פרופיל (Scope) קובע אילו שלבים רצים, באיזה עומק ואיזו אסטרטגיית בדיקות. סננו לפי העומק:</p>
+    <p class="lead">פרופיל (scope) קובע אילו שלבים רצים, באיזה עומק ואיזו סקירה. סננו לפי העומק:</p>
     <div class="chips" role="group" aria-label="סינון לפי עומק">${['הכול','Minimal','Standard','Comprehensive'].map((d,i)=>`<button class="chip" data-depth="${d}" aria-pressed="${i===0}">${d}</button>`).join('')}</div>
-    <div class="table-scroll"><table><thead><tr><th>פרופיל</th><th>מתאים ל</th><th>שלבים</th><th>עומק</th><th>פקודה</th></tr></thead><tbody id="profRows">
-    ${PROFILES.map(p=>`<tr data-d="${p.d}"><td><b>${p.n}</b></td><td>${p.use}</td><td class="num">${p.c} / 33</td><td>${p.d}</td><td><code>${p.cmd}</code></td></tr>`).join('')}
+    <div class="table-scroll"><table><thead><tr><th>פרופיל</th><th>מתאים ל</th><th>שלבים ${ui('מספרי השלבים לקוחים מדף Workflow Profiles. בפרויקט חדש (greenfield) Reverse Engineering לא רץ, ולכן המספר בפועל יכול להיות נמוך באחד – בפרק CLI, למשל, bugfix מוצג כ-8 מתוך 33.')}</th><th>עומק</th><th>סקירה</th><th>פקודה</th></tr></thead><tbody id="profRows">
+    ${PROFILES.map(p=>`<tr data-d="${p.d}"><td><b>${p.n}</b></td><td>${p.use}</td><td class="num">${p.c} / 33</td><td>${p.d}</td><td>${p.r}</td><td><code>${p.cmd}</code></td></tr>`).join('')}
     </tbody></table></div>
-    <p>לא חייבים לזכור את הטבלה: מתארים את העבודה, והסוכן מציע פרופיל ומבקש אישור לפני שמתחיל.</p>`,
+    <p>לא חייבים לזכור את הטבלה: מתארים את העבודה, והמערכת מציעה פרופיל עם מספר השלבים והשערים, ומחכה לאישור. תיאור עשיר או לא מוכר מקבל הצעה ל-compose.</p>`,
     after:el=>{ el.querySelectorAll('[data-depth]').forEach(b=>b.onclick=()=>{ el.querySelectorAll('[data-depth]').forEach(x=>x.setAttribute('aria-pressed', x===b)); el.querySelectorAll('#profRows tr').forEach(r=>r.classList.toggle('dim', b.dataset.depth!=='הכול' && r.dataset.d!==b.dataset.depth)); }); }},
-  {id:'c2-5', title:'כוונון: עומק, בדיקות וסקירה', body:()=>`
-    <p class="lead">דגלים מכווננים את הפרופיל שנבחר בלי להפוך אותו לפרופיל אחר.</p>
-    <div class="table-scroll"><table><thead><tr><th>דגל</th><th>מה הוא עושה</th></tr></thead><tbody>
+  {id:'c2-5', title:'כוונון ופקודות שימושיות', body:()=>`
+    <p class="lead">דגלים מכווננים את הפרופיל שנבחר בלי להחליף אותו, וכל שינוי נרשם ב-audit.</p>
+    <div class="table-scroll"><table><thead><tr><th>פקודה</th><th>מה היא עושה</th></tr></thead><tbody>
     <tr><td><code>--depth</code></td><td>minimal, standard או comprehensive – כמה מפורטים התוצרים</td></tr>
-    <tr><td><code>--test-strategy</code></td><td>minimal, standard או comprehensive – כמה בודקים</td></tr>
-    <tr><td><code>--review</code></td><td>adversarial, advisory או none – תקרת הסקירה; לא מעלה שלב מעבר למה שהוא מגדיר</td></tr>
-    <tr><td><code>--sensors</code></td><td>on או off – חיישנים שבודקים את העבודה</td></tr>
-    <tr><td><code>--learnings</code></td><td>on או off – שאלת הלקחים בסוף שלב</td></tr>
-    <tr><td><code>--guard-policy</code></td><td>strict או relaxed – הקשחת שומרים לעבודה רגישה</td></tr>
+    <tr><td><code>--test-strategy</code></td><td>minimal (בדיקה אחת לכל דרישה), standard (5–8 לכל רכיב) או comprehensive (10–15 לכל רכיב)</td></tr>
+    <tr><td><code>--review</code></td><td>adversarial, advisory או none – תקרה לסקירות. לא מעלה שלב מעל מה שהוא או הפרופיל מגדירים</td></tr>
+    <tr><td><code>--scope</code></td><td>החלפת פרופיל ל-workflow פעיל (לא במצב Construction אוטונומי)</td></tr>
+    <tr><td><code>--stage &lt;slug&gt; --single</code></td><td>הרצת שלב אחד בנפרד, בלי לקדם את ה-workflow</td></tr>
+    <tr><td><code>--status</code> / <code>--doctor</code></td><td>תמונת מצב / בדיקת תקינות של ההתקנה וה-workflow</td></tr>
     </tbody></table></div>
-    <p>לעבודה שלא מתאימה לשום פרופיל יש composer שמציע מסלול שלבים מותאם, ומחכה לאישור:</p>
+    <p>לעבודה שלא מתאימה לאף פרופיל, ה-composer מציע רשימת שלבים מותאמת עם נימוק לכל שלב שנכלל או נשמט, ומחכה לאישור:</p>
     ${codeBox('/aidlc compose "harden the deployment pipeline and add observability"')}`},
   {id:'c2-6', title:'Construction: יחידות ואוטונומיה', body:()=>`
-    <p class="lead">ב-Construction העבודה מתבצעת יחידה (Unit) אחרי יחידה, עם צ'קפוינט מאומת בסוף כל אחת.</p>
+    <p class="lead">ב-Construction כל שלב רץ לכל היחידות (Units) ואז עוברים לשלב הבא – stage-major. Build and Test ו-CI Pipeline רצים פעם אחת בסוף.</p>
     <ul class="plain">
-    <li><b>Walking skeleton:</b> היחידה הראשונה היא הפרוסה המשולבת הקטנה ביותר שעובדת. מאשרים אותה לפני שממשיכים. מסמך עיצוב ראשון אינו skeleton.</li>
-    <li><b>כמה אוטונומיה:</b> בוחרים <i>Continue automatically</i> או <i>Review each checkpoint</i>. אפשר להעניק או לשלול אוטונומיה במפורש בכל שלב.</li>
-    <li><b>סדרתי או מקבילי:</b> Unit-major נשאר סדרתי. ריצה מקבילית (swarm) רק אם בוחרים במפורש stage-major ו-swarm.</li>
-    <li><b>אימות:</b> פקודת האימות מאושרת ע"י אדם ומשמשת בכל צ'קפוינט. החלפה שלה דורשת אישור חדש. כשל עוצר את העבודה.</li>
+    <li><b>Walking skeleton:</b> ה-Bolt הראשון בתוכנית. השער שלו, בשלב הראשון של Construction, הוא נקודת הביטחון המוקדמת.</li>
+    <li><b>Ladder prompt:</b> מיד אחרי השער הזה נשאלים פעם אחת: להמשיך באופן אוטונומי (בלי שערים לשאר השלבים) או לעצור לשער בכל שלב. התשובה נשמרת ב-aidlc-state.md.</li>
+    <li><b>ריצה מקבילית:</b> יחידות שתלויות באותה יחידה ולא זו בזו יכולות לעבור Code Generation במקביל (swarm). unit-major הוא בחירה מפורשת שמבטלת את זה.</li>
+    <li><b>כשל עוצר:</b> כשל תמיד עוצר את Construction, גם במצב אוטונומי, ומציע retry, skip או abort.</li>
+    <li><b>שינוי תוכנית:</b> במצב אוטונומי אי אפשר לשנות scope או להריץ compose – צריך קודם לחזור למצב עם שערים.</li>
     </ul>
-    <div class="note"><b>זה לב רמה 4</b>אוטונומיה מבוקרת, עם אימות שאדם הגדיר, היא מה שמאפשר לסוכן להוביל בלי לאבד שליטה.</div>`},
-  {id:'c2-7', title:'11 הסוכנים', body:()=>`
-    <p class="lead">ה-workflow מפעיל סוכנים מתמחים. כל פרסונה עובדת בעיקר מול אחד או שניים מהם.</p>
-    <div class="table-scroll"><table><thead><tr><th>סוכן</th><th>תחום</th></tr></thead><tbody>
-    ${AGENTS.map(a=>`<tr><td><b>${a[0]}</b></td><td>${a[1]}</td></tr>`).join('')}
-    </tbody></table></div>`},
-  {id:'c2-8', title:'כללים, ידע ולולאת למידה', body:()=>`
-    <p class="lead">מה שהצוות לומד צריך להפוך לכלל, כדי שהסוכן לא יחזור על אותה טעות.</p>
-    <div class="table-scroll"><table><thead><tr><th>מנגנון</th><th>מה הוא מחזיק</th><th>בעלים</th></tr></thead><tbody>
-    <tr><td><b>Rules</b></td><td>הוראות מחייבות לסוכנים</td><td>ה-CoE (ארגוני) והצוות (מקומי)</td></tr>
-    <tr><td><b>Team Knowledge</b></td><td>ידע של הצוות: סטנדרטים, design system, החלטות</td><td>הצוות</td></tr>
-    <tr><td><b>Learnings</b></td><td>לקחים שנאספים בסוף שלב</td><td>כל משתמש, וה-CoE מקדם לכללים</td></tr>
+    <div class="note"><b>זה לב רמה 4</b>אוטונומיה שניתנת אחרי שלד עובד ומאושר, עם עצירה בכל כשל, מאפשרת לסוכנים להוביל בלי לאבד שליטה.</div>`},
+  {id:'c2-7', title:'14 הסוכנים', body:()=>`
+    <p class="lead">אחד-עשר מומחי תחום מבצעים את העבודה, שני סוקרים בודקים אותה, וה-composer מתאים את המסלול.</p>
+    <div class="table-scroll"><table><thead><tr><th>סוכן</th><th>תחום</th><th>מוביל, למשל</th></tr></thead><tbody>
+    ${AGENTS.map(a=>`<tr><td><b>${a[0]}</b></td><td>${a[1]}</td><td>${a[2]}</td></tr>`).join('')}
     </tbody></table></div>
-    <div class="note coe"><b>איך מעבירים לקח ל-CoE</b>לקח שחוזר בשני צוותים או יותר נשלח ל-${esc(CONFIG.contact)} ונכנס לריפו הכללים הארגוני בגרסה הבאה.</div>`},
+    <p>לכל סוכן יש דף מפורט בתיעוד (Agent deep dives) עם האחריות, השלבים והידע שהוא טוען.</p>`},
+  {id:'c2-8', title:'ידע, כללים ולולאת למידה', body:()=>`
+    <p class="lead">מה שהצוות יודע ולומד צריך להגיע לסוכנים, כדי שלא יחזרו על אותה טעות.</p>
+    <div class="table-scroll"><table><thead><tr><th>מנגנון</th><th>איפה</th><th>מה הוא מחזיק</th></tr></thead><tbody>
+    <tr><td><b>ידע לכל סוכן</b></td><td><code>aidlc/knowledge/&lt;agent&gt;/</code></td><td>סטנדרטים של הארגון לסוכן מסוים. לא עורכים את קובצי הסוכנים עצמם – הם נדרסים בשדרוג.</td></tr>
+    <tr><td><b>מסמכים</b></td><td><code>knowledge/documents/</code></td><td>PDF, Word ו-Markdown. <code>/aidlc knowledge onboard</code> מאנדקס אותם כדי שהסוכנים יצטטו במקום לנחש.</td></tr>
+    <tr><td><b>כללים ולקחים</b></td><td><code>memory/team.md</code>, <code>project.md</code></td><td>לקחים שאושרו ופרקטיקות שהתגלו ב-Practices Discovery.</td></tr>
+    <tr><td><b>חיישנים</b></td><td>לכל שלב</td><td>בדיקות דטרמיניסטיות; לקח יכול להוסיף חיישן ברמת הפרויקט.</td></tr>
+    </tbody></table></div>
+    <div class="note coe"><b>איך מעבירים לקח ל-CoE</b>לקח שחוזר בשני צוותים או יותר נשלח ל-${esc(CONFIG.contact)} ונכנס לידע ולכללים הארגוניים בגרסה הבאה.</div>`},
   {id:'c2-9', title:'תרגיל: בחרו פרופיל', quiz:['s1','s2','s3','s4','s5','c2a','c2b'], body:()=>`
-    <p class="lead">חמישה תרחישים ושתי שאלות. בחרו את הפרופיל המתאים.</p>
+    <p class="lead">חמישה תרחישים ושתי שאלות. בחרו את התשובה המתאימה.</p>
     ${['s1','s2','s3','s4','s5','c2a','c2b'].map(q=>quiz(q)).join('')}`}
  ]},
  {id:'c3', name:'המסלול שלך', time:'כ-30 דקות', desc:'מה ללמוד ברמה 3 וברמה 4 לפי התפקיד, תרגיל מעשי והסמכה.', steps:()=>{ const p=persona(); if(!p) return []; const k=state.persona; return [
@@ -649,16 +698,16 @@ const CHAPTERS = [
     <tr><th>סוכן</th><td>${p.agent}</td></tr>
     <tr><th>פאזות עיקריות</th><td>${p.phases}</td></tr>
     <tr><th>תרגיל מעשי</th><td>${p.ex}</td></tr>
-    <tr><th>הסמכה</th><td>${p.cert}</td></tr>
+    <tr><th>הסמכה ${ui('התרגילים, קריטריוני ההסמכה ושאלות הבדיקה בפרק 3 נכתבו על ידי ה-CoE ואינם חלק מהתיעוד הרשמי.')}</th><td>${p.cert}</td></tr>
     </tbody></table></div>`},
   {id:`c3-${k}-2`, title:'רמה 3: מה ללמוד', body:()=>checklist(`${k}-l3`, p.l3, 'סמנו כל יכולת שתרגלתם בעבודה אמיתית. הסימון נשמר בדפדפן.')},
-  {id:`c3-${k}-3`, title:'רמה 4: מה ללמוד', body:()=>checklist(`${k}-l4`, p.l4, 'אלה היכולות שמעבירות אותך מאישור כל שלב לניהול דרך כללים, ידע ואוטונומיה.')},
+  {id:`c3-${k}-3`, title:'רמה 4: מה ללמוד', body:()=>checklist(`${k}-l4`, p.l4, 'אלה היכולות שמעבירות אותך מאישור כל שלב לניהול דרך ידע, כללים ואוטונומיה.')},
   {id:`c3-${k}-4`, title:'תרגיל והסמכה', body:()=>`
     <p class="lead">ההסמכה מבוססת על תוצר אמיתי בפיילוט, לא על מבחן.</p>
     <h2>התרגיל</h2><p>${p.ex}</p>
     <h2>מה מוגש ל-CoE</h2><p>${p.cert}</p>
     <h2>איך מגישים</h2>
-    <ul class="plain"><li>קישור לתיקיית <code>aidlc-docs</code> של ה-intent.</li><li>צילום או ייצוא של יומן ה-audit.</li><li>שני לקחים שלמדת, בשורה אחת כל אחד.</li></ul>
+    <ul class="plain"><li>קישור לתיקיית ה-intent (aidlc/spaces/…/intents/…).</li><li>דוח OUTCOMES.md שנוצר עם /aidlc-outcomes-pack.</li><li>שני לקחים שלמדת, בשורה אחת כל אחד.</li></ul>
     <p>שלחו ל-<b>${esc(CONFIG.contact)}</b>. ה-Champion של הצוות מאשר ראשון.</p>`},
   {id:`c3-${k}-5`, title:'בדיקת ידע', quiz:[`p-${k}`], body:()=>`
     <p class="lead">שאלה אחת מהעבודה היומיומית שלך.</p>${quiz(`p-${k}`)}`}
@@ -724,12 +773,17 @@ function renderWelcome(){
     <h2>מה התפקיד שלך?</h2>
     <p style="color:var(--muted)">הבחירה קובעת את פרק 3 ומדגישה את התפקיד שלך בפרקים הקודמים. אפשר להחליף בכל שלב.</p>
     <div class="personas" role="radiogroup">${Object.entries(PERSONAS).map(([k,v])=>`<label class="persona"><input type="radio" name="persona" value="${k}" ${state.persona===k?'checked':''}><span><span class="pt">${v.name}</span><br><span class="pd">${v.desc}</span></span></label>`).join('')}</div>
-    <div class="btn-row"><button class="btn" id="startBtn" ${state.persona?'':'disabled'}>${resume && Object.keys(state.done).length ? 'המשך מהמקום שעצרת' : 'התחל בפרק 1'}</button>${Object.keys(state.done).length?'<button class="btn alt" id="fromStart">התחל מההתחלה</button>':''}</div>
+    <div class="btn-row" style="margin-bottom:30px"><button class="btn" id="startBtn" ${state.persona?'':'disabled'}>${resume && Object.keys(state.done).length ? 'המשך מהמקום שעצרת' : 'התחל בפרק 1'}</button>${Object.keys(state.done).length?'<button class="btn alt" id="fromStart">התחל מההתחלה</button>':''}</div>
+    ${sourcesHtml()}
   </section>`;
   $('main').querySelectorAll('input[name=persona]').forEach(r=>r.onchange=()=>{ state.persona=r.value; save(); renderChrome(); $('startBtn').disabled=false; });
   $('startBtn').onclick=()=>{ const r=flat().find(s=>!state.done[s.id]); go(r? r.id : 'finish'); };
   if($('fromStart')) $('fromStart').onclick=()=>go('c1-1');
 }
+function sourcesHtml(){ return `<h2>מקורות ותיקוף</h2>
+    <p>התוכן ${esc(CONFIG.verified)}. כל טענה שלא אומתה מול התיעוד הרשמי – כמו הגדרת הרמות, המיפוי לתפקידים ומדדי ה-CoE – מסומנת כך:</p>
+    <p class="legend">${ui('דוגמה: כך מסומן מידע מורחב שה-CoE הוסיף ולא אומת מול התיעוד הרשמי.')} <span>ריחוף, מיקוד או לחיצה מציגים את ההסבר.</span></p>
+    <ul class="plain sources">${SOURCES.map(([t,u,d])=>`<li><a href="${u}" target="_blank" rel="noopener">${t}</a> – ${d}</li>`).join('')}</ul>`; }
 
 function renderStep(s){
   const n=chapterSteps(s.ch).length;
@@ -748,20 +802,30 @@ function renderQuiz(el){
   el.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>{ state.answers[id]=+b.dataset.opt; if(state.answers[id]===q.a){ state.firstTry = state.firstTry||{}; if(state.firstTry[id]===undefined) state.firstTry[id]=true; } else { state.firstTry=state.firstTry||{}; state.firstTry[id]=false; } save(); renderQuiz(el); renderPager(); });
 }
 
+function certId(){ const src=`${state.name||''}|${state.persona||''}|${CONFIG.appVersion}|${state.issued||''}`; let h=5381; for(const ch of src) h=((h<<5)+h+ch.codePointAt(0))>>>0; return 'AIDLC-'+h.toString(16).toUpperCase().padStart(8,'0'); }
+function watermark(){
+  const ink=getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#1A2233';
+  const t=`${state.name||'ללא שם'} · ${certId()} · לשימוש פנימי`;
+  const x=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="360" height="170"><text x="180" y="92" text-anchor="middle" direction="rtl" font-family="Arial, sans-serif" font-size="15" fill="${x(ink)}" fill-opacity="0.09" transform="rotate(-22 180 85)">${x(t)}</text></svg>`;
+  return `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}")`;
+}
+function paintCert(){ const c=$('cert'); if(!c) return; c.style.backgroundImage=watermark(); $('certName').textContent=state.name||''; $('certId').innerHTML='מזהה תעודה: <bdi dir="ltr">'+certId()+'</bdi>'; $('printBtn').disabled=!(state.name||'').trim(); }
 function renderFinish(){
   const all=flat(), done=all.filter(s=>state.done[s.id]).length, missing=all.filter(s=>!state.done[s.id]);
   const qs=Object.keys(state.firstTry||{}), first=qs.filter(q=>state.firstTry[q]).length;
-  const p=persona(); const date=new Date().toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'});
+  if(!missing.length && !state.issued){ state.issued=new Date().toISOString(); save(); }
+  const p=persona(); const date=new Date(state.issued||Date.now()).toLocaleDateString('he-IL',{day:'numeric',month:'long',year:'numeric'});
   $('main').innerHTML = `<div class="crumb">סיום</div><h1>${missing.length?'כמעט שם':'סיימת את הלומדה'}</h1>
    ${missing.length? `<p class="lead">נשארו ${missing.length} שלבים. התעודה תיפתח כשכולם יושלמו.</p><ul class="plain">${missing.map(s=>`<li><a href="#${s.id}" data-go="${s.id}">פרק ${s.ci+1}: ${esc(s.title)}</a></li>`).join('')}</ul>`
    : `<p class="lead">הצעד הבא הוא התרגיל המעשי והגשת ההסמכה ל-CoE (פרק 3, שלב 4).</p>
-   <div class="field no-print"><label for="nm">השם שיופיע בתעודה</label><input id="nm" value="${esc(state.name||'')}" autocomplete="name"></div>
-   <div class="cert"><div class="co">${esc(CONFIG.org)}</div><div class="cn" id="certName">${esc(state.name||'')}</div>
+   <div class="field no-print"><label for="nm">השם המלא שיופיע בתעודה ובסימן המים</label><input id="nm" value="${esc(state.name||'')}" autocomplete="name"></div>
+   <div class="cert" id="cert"><div class="co">${esc(CONFIG.org)}</div><div class="cn" id="certName"></div>
    <div class="cd">השלים/ה את ${esc(CONFIG.course)}<br>במסלול ${p?esc(p.name):''} · ${date}</div>
-   <div class="stats"><div><strong>${done}</strong>שלבים</div><div><strong>${qs.length?Math.round(first/qs.length*100):0}%</strong>תשובות נכונות בניסיון ראשון</div></div></div>
-   <div class="btn-row no-print"><button class="btn" id="printBtn">הדפסה או שמירה כ-PDF</button></div>`}`;
-  if($('nm')) $('nm').oninput=e=>{ state.name=e.target.value; $('certName').textContent=state.name; save(); };
-  if($('printBtn')) $('printBtn').onclick=()=>window.print();
+   <div class="stats"><div><strong>${done}</strong>שלבים</div><div><strong>${qs.length?Math.round(first/qs.length*100):0}%</strong>תשובות נכונות בניסיון ראשון</div></div>
+   <div class="cid" id="certId"></div><div class="cc">${esc(CONFIG.copyright)}</div></div>
+   <div class="btn-row no-print"><button class="btn" id="printBtn">הדפסה או שמירה כ-PDF</button><span class="count">ההדפסה נפתחת אחרי שממלאים שם.</span></div>`}`;
+  if($('nm')){ $('nm').oninput=e=>{ state.name=e.target.value; save(); paintCert(); }; $('printBtn').onclick=()=>{ if((state.name||'').trim()) window.print(); }; paintCert(); }
 }
 
 function renderPager(){
@@ -783,7 +847,7 @@ function renderChrome(){
   const p=persona(); $('personaBtn').textContent = p ? p.short : 'בחר פרסונה';
   $('personaBtn').setAttribute('aria-label', p ? `פרסונה: ${p.name}. לחצו להחלפה` : 'בחירת פרסונה');
   renderPersonaMenu(); renderRail(); renderOutline(); renderPager();
-  $('siteFoot').textContent = footerText();
+  $('siteFoot').innerHTML = esc(footerText()) + `<span class="copy-line">${esc(CONFIG.copyright)}</span>`;
 }
 
 function render(){
@@ -795,6 +859,7 @@ function render(){
 }
 
 function go(id, push=true){
+  if(typeof hideTip==='function') hideTip(true);
   if(typeof stopRead==='function' && RD.on) stopRead(true);
   state.current=id; save(); render(); closeMenu();
   if(push) history.replaceState(null,'','#'+id);
@@ -807,7 +872,7 @@ $('prevBtn').onclick=()=>{ const all=flat(), i=all.findIndex(s=>s.id===state.cur
 function closeMenu(){ $('outline').classList.remove('open'); $('scrim').classList.remove('open'); $('menuBtn').setAttribute('aria-expanded','false'); }
 $('menuBtn').onclick=()=>{ const o=$('outline').classList.toggle('open'); $('scrim').classList.toggle('open',o); $('menuBtn').setAttribute('aria-expanded',o); };
 $('scrim').onclick=closeMenu;
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(RD.on) stopRead(); if(openPop) closePopup(); closeMenu(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ hideTip(true); if(RD.on) stopRead(); if(openPop) closePopup(); closeMenu(); } });
 document.addEventListener('click',e=>{
   if(openPop && !openPop.pop.contains(e.target) && !openPop.btn.contains(e.target)) closePopup(false);
   const g=e.target.closest('[data-go]'); if(g){ e.preventDefault(); go(g.dataset.go); return; }
@@ -944,6 +1009,26 @@ $('stopReadTop').onclick=()=>stopRead();
 /* ---------------- כותרת תחתונה ---------------- */
 function ltr(t){ return t.replace(/([A-Za-z][A-Za-z0-9\-. ]*[A-Za-z0-9]|\d+(?:[.:]\d+)*)/g,'\u200E$1\u200E'); }
 function footerText(){ return ltr(`${CONFIG.unit} · ${CONFIG.course} · גרסה ${CONFIG.appVersion} · נשמר ${CONFIG.saved}`); }
+
+/* ---------------- ⓘ מידע מורחב ולא מאומת ---------------- */
+const viTip=document.createElement('div'); viTip.id='viTip'; viTip.hidden=true; viTip.setAttribute('aria-hidden','true'); document.body.appendChild(viTip);
+let viCur=null, viPinned=false;
+function showTip(btn){
+  if(viCur && viCur!==btn) viCur.setAttribute('aria-expanded','false');
+  viCur=btn; btn.setAttribute('aria-expanded','true');
+  viTip.innerHTML=`<b>מידע מורחב ולא מאומת</b>${esc(btn.dataset.note)}`; viTip.hidden=false;
+  const r=btn.getBoundingClientRect(), w=viTip.offsetWidth, h=viTip.offsetHeight;
+  let left=Math.min(Math.max(12, r.left+r.width/2-w/2), innerWidth-w-12);
+  let top=r.top-h-8; if(top<8) top=r.bottom+8;
+  viTip.style.left=left+'px'; viTip.style.top=top+'px';
+}
+function hideTip(force){ if(viPinned && !force) return; viPinned=false; viTip.hidden=true; if(viCur){ viCur.setAttribute('aria-expanded','false'); viCur=null; } }
+document.addEventListener('mouseover',e=>{ const b=e.target.closest('.vi'); if(b && !viPinned) showTip(b); });
+document.addEventListener('mouseout',e=>{ const b=e.target.closest('.vi'); if(b && !viPinned) hideTip(); });
+document.addEventListener('focusin',e=>{ const b=e.target.closest('.vi'); if(b) showTip(b); else if(!viPinned) hideTip(); });
+document.addEventListener('click',e=>{ const b=e.target.closest('.vi'); if(b){ e.preventDefault(); if(viPinned && viCur===b){ hideTip(true); } else { viPinned=true; showTip(b); } return; } if(viPinned) hideTip(true); }, true);
+window.addEventListener('scroll',()=>hideTip(true),{passive:true});
+window.addEventListener('resize',()=>hideTip(true));
 
 /* ---------------- הפעלה ---------------- */
 applyA11y();
