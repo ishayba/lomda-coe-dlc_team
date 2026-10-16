@@ -218,19 +218,82 @@ tr.dim td{opacity:.35}
   .seg-label > span{display:none}
   .seg:not(.is-current) .nm{display:none}
   .where{font-size:12.5px}
-  #themeBtn{display:none}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+/* ---------- נגישות ---------- */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip{position:absolute;top:-100px;right:12px;z-index:100;background:var(--accent);color:#1A1208;padding:10px 16px;border-radius:var(--radius-s);font-weight:600;text-decoration:none}
+.skip:focus{top:calc(10px + env(safe-area-inset-top,0px))}
+.top,.layout,.pager{zoom:var(--zoom,1)}
+.pop-wrap{position:relative}
+.top-btn.active{background:rgba(255,255,255,.16);border-color:var(--on-navy)}
+.pop{position:absolute;top:calc(100% + 8px);left:0;z-index:50;width:min(340px,calc(100vw - 24px));max-height:calc(100vh - 150px);overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--radius-m);box-shadow:0 12px 32px rgba(0,0,0,.22);padding:12px 16px 16px;text-align:start}
+.pop-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.pop-head b{font-size:16px}
+.x{background:none;border:0;font-size:22px;line-height:1;width:32px;height:32px;border-radius:6px;cursor:pointer;color:var(--muted)}
+.x:hover{background:var(--bg)}
+.a-sec{padding:10px 0;border-top:1px solid var(--line)}
+.a-lbl{font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.seg-ctl,.step-ctl,.read-ctl{display:flex;border:1px solid var(--line);border-radius:var(--radius-s);overflow:hidden}
+.seg-ctl button,.step-ctl button,.read-ctl button{flex:1;border:0;border-inline-start:1px solid var(--line);background:var(--surface);padding:8px 6px;cursor:pointer;font-size:14.5px;color:var(--ink)}
+.seg-ctl button:first-child,.step-ctl button:first-child,.read-ctl button:first-child{border-inline-start:0}
+.seg-ctl button[aria-pressed="true"],.read-ctl button[aria-pressed="true"]{background:var(--navy);color:var(--on-navy)}
+.pop button[disabled]{opacity:.45;cursor:not-allowed}
+.a-note{font-size:13px;color:var(--muted);margin-top:6px}
+.a-note:empty{display:none}
+.tgl{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;padding:8px 2px;cursor:pointer;font-size:15px;text-align:start;color:var(--ink)}
+.tgl .tx{flex:1}
+.tgl .st{font-size:12.5px;color:var(--muted)}
+.sw{flex:none;width:36px;height:20px;border-radius:999px;background:var(--line);position:relative}
+.sw::after{content:"";position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.3);transition:right .15s}
+.tgl[aria-pressed="true"] .sw{background:var(--good)}
+.tgl[aria-pressed="true"] .sw::after{right:18px}
+.a-reset{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.a11y-btn{display:inline-flex;align-items:center;gap:6px;position:relative}
+.a11y-dot{position:absolute;top:-3px;left:-3px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--navy)}
+.stop-read{background:var(--accent);color:#1A1208;border-color:var(--accent);font-weight:600}
+.persona-menu{padding:8px}
+.pm-item{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:start;background:none;border:0;border-radius:var(--radius-s);padding:9px 10px;cursor:pointer;color:var(--ink);line-height:1.35}
+.pm-item:hover,.pm-item:focus-visible{background:var(--bg)}
+.pm-item .rd{flex:none;width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);margin-top:2px}
+.pm-item[aria-checked="true"] .rd{border-color:var(--accent);background:radial-gradient(var(--accent) 45%, transparent 50%)}
+.pm-item[aria-checked="true"] .pt{font-weight:600}
+.pm-item .pd{display:block;font-size:13px;color:var(--muted)}
+.pm-head{font-size:13px;color:var(--muted);padding:4px 10px 6px}
+.a-reading{outline:3px solid var(--accent)!important;outline-offset:3px;border-radius:4px;background:var(--accent-soft)}
+.site-foot{grid-column:2;margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);opacity:.85}
+@media (max-width:900px){.site-foot{grid-column:1}}
+@media (max-width:600px){.a11y-btn .lbl{display:none}.stop-read .lbl{display:none}.pop{position:fixed;top:calc(env(safe-area-inset-top,0px) + 78px);left:12px;right:12px;width:auto;max-height:calc(100vh - 170px)}}
+
+html.a-contrast:root{--bg:#000;--surface:#000;--ink:#fff;--muted:#fff;--line:#fff;--navy:#000;--navy-2:#000;--on-navy:#fff;--on-navy-muted:#fff;--accent:#FFD400;--accent-soft:#000;--good:#7CFF8A;--good-soft:#000;--bad:#FF8A80;--bad-soft:#000;--code-bg:#000;color-scheme:dark}
+html.a-contrast :focus-visible{outline:3px solid #FFD400;outline-offset:2px}
+html.a-contrast .top{border-bottom:2px solid #fff}
+html.a-contrast h1,html.a-contrast .cert .cn{color:#fff}
+html.a-contrast .btn{border:2px solid #fff}
+html.a-contrast .chip[aria-pressed="true"],html.a-contrast .seg-ctl button[aria-pressed="true"],html.a-contrast .read-ctl button[aria-pressed="true"]{background:#FFD400;color:#000}
+html.a-contrast .opt.right .k,html.a-contrast .opt.wrong .k{color:#000}
+html.a-contrast .done .dot::after{border-color:#000}
+html.a-contrast .tgl[aria-pressed="true"] .sw::after{background:#000}
+html.a-contrast *,html.a-contrast *::before,html.a-contrast *::after{transition:none!important;animation:none!important}
+.a-gray main,.a-gray .top,.a-gray .outline,.a-gray .pager{filter:grayscale(1)}
+.a-links main a,.a-links main button,.a-links .outline a,.a-links .pager button{text-decoration:underline;text-underline-offset:3px;outline:1.5px dashed currentColor;outline-offset:2px}
+.a-font body,.a-font button,.a-font input{font-family:Arial,'Arial Hebrew',sans-serif;letter-spacing:.02em;word-spacing:.12em}
+.a-lines main,.a-lines main p,.a-lines main li,.a-lines .opt,.a-lines td{line-height:1.95}
+.a-still *,.a-still *::before,.a-still *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}
 @media print{
   .top,.outline,.pager,.no-print,.scrim{display:none!important}
   .layout{display:block;padding:0}
   body{background:#fff}
   main>*:not(.cert){display:none}
+  .site-foot{position:fixed;bottom:0;left:0;right:0;text-align:center;border:0;opacity:1}
   .cert{margin:40px auto;border-color:#1E3354}
 }
 </style>
 </head>
 <body>
+<a class="skip" href="#main" id="skipLink">דלג לתוכן</a>
+<div class="sr-only" id="live" role="status" aria-live="polite"></div>
 <header class="top">
   <div class="slogan" id="slogan"></div>
   <div class="top-row">
@@ -244,10 +307,32 @@ tr.dim td{opacity:.35}
         <div class="course" id="courseName"></div>
       </div>
     </div>
-    <button class="top-btn" id="personaBtn"></button>
-    <button class="top-btn icon-btn" id="themeBtn" aria-label="החלפת מצב תצוגה">
-      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 2a7 7 0 0 1 0 14z" fill="currentColor"/></svg>
-    </button>
+    <div class="pop-wrap">
+      <button class="top-btn" id="personaBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="personaMenu"></button>
+      <div class="pop persona-menu" id="personaMenu" role="menu" aria-label="בחירת פרסונה" hidden></div>
+    </div>
+    <button class="top-btn stop-read" id="stopReadTop" hidden aria-label="עצירת הקראה">■ <span class="lbl">עצירת הקראה</span></button>
+    <div class="pop-wrap">
+      <button class="top-btn a11y-btn" id="a11yBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="a11yPanel" aria-label="תפריט נגישות"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="6.6" r="1.6" fill="currentColor"/><path d="M6.5 9.3l5.5 1.2 5.5-1.2M12 10.5v3.6m0 0l-2.6 5m2.6-5l2.6 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">נגישות</span><span class="a11y-dot" id="a11yDot" aria-hidden="true" hidden></span></button>
+      <div class="pop a11y-panel" id="a11yPanel" role="dialog" aria-label="הגדרות נגישות" hidden>
+        <div class="pop-head"><b>נגישות</b><button class="x" id="a11yClose" aria-label="סגירת תפריט הנגישות">×</button></div>
+        <div class="a-sec"><div class="a-lbl" id="lblTheme">ערכת צבעים</div>
+          <div class="seg-ctl" role="group" aria-labelledby="lblTheme">
+            <button data-theme-set="auto" aria-pressed="true">◐ אוטומטי</button><button data-theme-set="light" aria-pressed="false">☀ יום</button><button data-theme-set="dark" aria-pressed="false">☾ לילה</button>
+          </div></div>
+        <div class="a-sec"><div class="a-lbl" id="lblSize">גודל טקסט</div>
+          <div class="step-ctl" role="group" aria-labelledby="lblSize">
+            <button id="zoomIn" aria-label="הגדלת טקסט">א+</button><button id="zoomReset" aria-label="החזרת גודל הטקסט ל-100%">100%</button><button id="zoomOut" aria-label="הקטנת טקסט">א−</button>
+          </div></div>
+        <div class="a-sec"><div class="a-lbl" id="lblRead">הקראת העמוד</div>
+          <div class="read-ctl" role="group" aria-labelledby="lblRead">
+            <button id="readBtn" aria-pressed="false">▶ הקראה</button><button id="pauseBtn" disabled>השהיה</button><button id="stopBtn" disabled>■ עצירה</button>
+          </div>
+          <div class="a-note" id="readNote"></div></div>
+        <div class="a-sec" id="a11yToggles"></div>
+        <div class="a-reset"><button class="link-btn" id="a11yReset">איפוס הגדרות נגישות</button></div>
+      </div>
+    </div>
   </div>
   <div class="rail-wrap">
     <div class="rail" id="rail"></div>
@@ -258,6 +343,7 @@ tr.dim td{opacity:.35}
 <div class="layout">
   <nav class="outline" id="outline" aria-label="תוכן הלומדה"></nav>
   <main id="main" tabindex="-1"></main>
+  <div class="site-foot" id="siteFoot"></div>
 </div>
 <footer class="pager" id="pager">
   <div class="pager-in">
@@ -277,7 +363,10 @@ const CONFIG = {
   contact: 'coe-aidlc@your-org.example',
   rulesRepo: 'git.your-org.example/coe/aidlc-rules',
   slogan: 'הסוד להצלחה = "ניסיון, סקרנות ו-AI הם השילוב המנצח."',
-  version: 'גרסה 1.0 · אוקטובר 2026',
+  version: 'גרסה 1.1 · אוקטובר 2026',
+  unit: 'יחידת CoE AI-DLC · מחלקת הפיתוח',
+  appVersion: '1.1',
+  saved: '16.10.2026 19:53',
   storageKey: 'aidlc-lomda-v1'
 };
 
@@ -693,7 +782,8 @@ function renderChrome(){
   $('slogan').textContent=CONFIG.slogan||''; $('orgName').textContent=CONFIG.org; $('courseName').textContent=CONFIG.course;
   const p=persona(); $('personaBtn').textContent = p ? p.short : 'בחר פרסונה';
   $('personaBtn').setAttribute('aria-label', p ? `פרסונה: ${p.name}. לחצו להחלפה` : 'בחירת פרסונה');
-  renderRail(); renderOutline(); renderPager();
+  renderPersonaMenu(); renderRail(); renderOutline(); renderPager();
+  $('siteFoot').textContent = footerText();
 }
 
 function render(){
@@ -705,6 +795,7 @@ function render(){
 }
 
 function go(id, push=true){
+  if(typeof stopRead==='function' && RD.on) stopRead(true);
   state.current=id; save(); render(); closeMenu();
   if(push) history.replaceState(null,'','#'+id);
   window.scrollTo({top:0}); $('main').focus({preventScroll:true});
@@ -713,13 +804,12 @@ function go(id, push=true){
 /* ---------------- אירועים ---------------- */
 $('nextBtn').onclick=()=>{ const all=flat(), i=all.findIndex(s=>s.id===state.current); const s=all[i]; if(!quizDone(s)) return; state.done[s.id]=true; go(i<all.length-1 ? all[i+1].id : 'finish'); };
 $('prevBtn').onclick=()=>{ const all=flat(), i=all.findIndex(s=>s.id===state.current); if(state.current==='finish') go(all[all.length-1].id); else go(i>0?all[i-1].id:'welcome'); };
-$('personaBtn').onclick=()=>go('welcome');
-$('themeBtn').onclick=()=>{ const r=document.documentElement; const dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches; r.dataset.theme = dark?'light':'dark'; try{localStorage.setItem(CONFIG.storageKey+'-theme', r.dataset.theme)}catch(e){} };
 function closeMenu(){ $('outline').classList.remove('open'); $('scrim').classList.remove('open'); $('menuBtn').setAttribute('aria-expanded','false'); }
 $('menuBtn').onclick=()=>{ const o=$('outline').classList.toggle('open'); $('scrim').classList.toggle('open',o); $('menuBtn').setAttribute('aria-expanded',o); };
 $('scrim').onclick=closeMenu;
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(RD.on) stopRead(); if(openPop) closePopup(); closeMenu(); } });
 document.addEventListener('click',e=>{
+  if(openPop && !openPop.pop.contains(e.target) && !openPop.btn.contains(e.target)) closePopup(false);
   const g=e.target.closest('[data-go]'); if(g){ e.preventDefault(); go(g.dataset.go); return; }
   if(e.target.id==='resetBtn'){ if(confirm('לאפס את כל ההתקדמות, התשובות והסימונים?')){ Object.assign(state,{persona:null,current:'welcome',done:{},answers:{},checks:{},name:'',firstTry:{}}); save(); go('welcome'); } return; }
   const c=e.target.closest('[data-copy]'); if(c){ const t=c.nextElementSibling.innerText; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{c.textContent='הועתק';setTimeout(()=>c.textContent='העתקה',1500)}).catch(()=>{c.textContent='סמנו והעתיקו ידנית'}); }
@@ -730,12 +820,135 @@ document.addEventListener('change',e=>{
   const g=cb.dataset.group, tot=+cb.dataset.total; const n=[...Array(tot).keys()].filter(i=>state.checks[`${g}-${i}`]).length;
   const el=$('cnt-'+g); if(el) el.textContent=`${n} מתוך ${tot} סומנו`;
 });
-window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(h && h!==state.current) go(h,false); });
+window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(h && h!==state.current && validId(h)) go(h,false); });
+function validId(h){ return h==='welcome' || h==='finish' || !!findStep(h); }
+
+/* ---------------- תפריטים נפתחים ---------------- */
+let openPop=null;
+function openPopup(btn,pop){ closePopup(false); pop.hidden=false; btn.setAttribute('aria-expanded','true'); btn.classList.add('active'); openPop={btn,pop}; const f=pop.querySelector('[aria-checked="true"]')||pop.querySelector('button:not([disabled])'); if(f) f.focus(); }
+function closePopup(returnFocus=true){ if(!openPop) return; const {btn,pop}=openPop; pop.hidden=true; btn.setAttribute('aria-expanded','false'); btn.classList.remove('active'); openPop=null; if(returnFocus) btn.focus(); }
+function togglePopup(btn,pop){ if(openPop && openPop.pop===pop) closePopup(); else openPopup(btn,pop); }
+function announce(msg){ const l=$('live'); l.textContent=''; setTimeout(()=>{ l.textContent=msg; },40); }
+
+/* ---------------- תפריט פרסונה ---------------- */
+function renderPersonaMenu(){
+  $('personaMenu').innerHTML = `<div class="pm-head">התפקיד שלך קובע את פרק 3</div>` + Object.entries(PERSONAS).map(([k,v])=>`<button class="pm-item" role="menuitemradio" aria-checked="${state.persona===k}" data-persona="${k}"><span class="rd" aria-hidden="true"></span><span><span class="pt">${v.name}</span><span class="pd">${v.desc}</span></span></button>`).join('');
+}
+function setPersona(k){
+  state.persona=k; let target=state.current;
+  const m=/^c3-[a-z]+-(\d+)$/.exec(state.current); if(m) target=`c3-${k}-${m[1]}`;
+  save(); closePopup(); announce(`הפרסונה הוחלפה ל${PERSONAS[k].name}`); go(target);
+}
+$('personaBtn').onclick=()=>togglePopup($('personaBtn'),$('personaMenu'));
+$('personaMenu').addEventListener('click',e=>{ const b=e.target.closest('[data-persona]'); if(b) setPersona(b.dataset.persona); });
+$('personaMenu').addEventListener('keydown',e=>{
+  const items=[...$('personaMenu').querySelectorAll('.pm-item')]; const i=items.indexOf(document.activeElement);
+  const mv={ArrowDown:1,ArrowUp:-1}[e.key];
+  if(mv){ e.preventDefault(); items[(i+mv+items.length)%items.length].focus(); }
+  else if(e.key==='Home'){ e.preventDefault(); items[0].focus(); }
+  else if(e.key==='End'){ e.preventDefault(); items[items.length-1].focus(); }
+  else if(e.key==='Tab'){ closePopup(false); }
+});
+
+/* ---------------- תפריט נגישות ---------------- */
+const A11Y_KEY = CONFIG.storageKey+'-a11y', THEME_KEY = CONFIG.storageKey+'-theme';
+const ZOOMS=[0.8,0.9,1,1.15,1.3,1.5];
+const TOGGLES=[['contrast','ניגודיות גבוהה'],['gray','גווני אפור'],['links','הדגשת קישורים וכפתורים'],['font','גופן קריא'],['lines','ריווח שורות'],['still','עצירת אנימציות']];
+const A={zoom:1,on:{}};
+let theme='auto';
+const sysStill = matchMedia('(prefers-reduced-motion: reduce)');
+try{ const s=JSON.parse(localStorage.getItem(A11Y_KEY)||'null'); if(s){ A.zoom=ZOOMS.includes(s.zoom)?s.zoom:1; A.on=s.on||{}; } }catch(e){}
+try{ const t=localStorage.getItem(THEME_KEY); if(t==='light'||t==='dark') theme=t; }catch(e){}
+function saveA11y(){ try{ localStorage.setItem(A11Y_KEY, JSON.stringify(A)); if(theme==='auto') localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, theme); }catch(e){} }
+$('a11yToggles').innerHTML = TOGGLES.map(([k,t])=>`<button class="tgl" data-a="${k}" aria-pressed="false"><span class="tx">${t}</span><span class="st"></span><span class="sw" aria-hidden="true"></span></button>`).join('');
+function a11yChanged(){ return A.zoom!==1 || theme!=='auto' || TOGGLES.some(([k])=>A.on[k]) || RD.on; }
+function applyA11y(){
+  const r=document.documentElement;
+  r.style.setProperty('--zoom', A.zoom);
+  if(theme==='auto') delete r.dataset.theme; else r.dataset.theme=theme;
+  TOGGLES.forEach(([k])=>r.classList.toggle('a-'+k, !!A.on[k]));
+  if(sysStill.matches) r.classList.add('a-still');
+  document.querySelectorAll('[data-theme-set]').forEach(b=>b.setAttribute('aria-pressed', b.dataset.themeSet===theme));
+  document.querySelectorAll('[data-a]').forEach(b=>{ const on=!!A.on[b.dataset.a] || (b.dataset.a==='still' && sysStill.matches); b.setAttribute('aria-pressed', on); b.querySelector('.st').textContent = on ? 'פועל' : 'כבוי'; });
+  $('zoomReset').textContent = Math.round(A.zoom*100)+'%';
+  $('zoomIn').disabled = A.zoom===ZOOMS[ZOOMS.length-1]; $('zoomOut').disabled = A.zoom===ZOOMS[0];
+  $('a11yDot').hidden = !a11yChanged();
+}
+function setZoom(dir){ const i=ZOOMS.indexOf(A.zoom); const n = dir===0 ? 1 : ZOOMS[Math.min(ZOOMS.length-1, Math.max(0, i+dir))]; A.zoom=n; saveA11y(); applyA11y(); announce(`גודל טקסט ${Math.round(n*100)}%`); }
+$('a11yBtn').onclick=()=>togglePopup($('a11yBtn'),$('a11yPanel'));
+$('a11yClose').onclick=()=>closePopup();
+$('zoomIn').onclick=()=>setZoom(1); $('zoomOut').onclick=()=>setZoom(-1); $('zoomReset').onclick=()=>setZoom(0);
+document.querySelectorAll('[data-theme-set]').forEach(b=>b.onclick=()=>{ theme=b.dataset.themeSet; saveA11y(); applyA11y(); announce({auto:'ערכת צבעים אוטומטית לפי הגדרות המחשב',light:'מצב יום',dark:'מצב לילה'}[theme]); });
+$('a11yToggles').addEventListener('click',e=>{ const b=e.target.closest('[data-a]'); if(!b) return; const k=b.dataset.a; A.on[k]=!A.on[k]; saveA11y(); applyA11y(); announce(`${b.querySelector('.tx').textContent} ${A.on[k]?'הופעל':'כובה'}`); });
+$('a11yReset').onclick=()=>{ stopRead(true); A.zoom=1; A.on={}; theme='auto'; saveA11y(); applyA11y(); announce('הגדרות הנגישות אופסו'); };
+$('skipLink').onclick=e=>{ e.preventDefault(); $('main').focus(); $('main').scrollIntoView(); };
+sysStill.addEventListener && sysStill.addEventListener('change', applyA11y);
+
+/* ---------------- הקראת העמוד ---------------- */
+const RD={on:false,paused:false,list:[],i:0,run:0,voice:null,utt:null};
+const synthOK = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+function pickVoice(){ if(!synthOK) return; const v=speechSynthesis.getVoices(); RD.voice = v.find(x=>/^(he|iw)/i.test(x.lang)) || null; }
+if(synthOK){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+else { $('readBtn').disabled=true; $('readNote').textContent='הדפדפן הזה לא תומך בהקראה. אפשר להשתמש בקורא מסך או בדפדפן אחר.'; }
+const READ_SEL='#where, main .crumb, main h1, main h2, main h4, main p, main li, main tr, main .qq, main .opt, main .why, main .note, main .anat-panel, main .persona, main .cert, main .count, #siteFoot';
+function readTargets(){
+  const all=[...document.querySelectorAll(READ_SEL)].filter(el=>el.getClientRects().length && getComputedStyle(el).visibility!=='hidden');
+  const set=new Set(all);
+  return all.filter(el=>{ let p=el.parentElement; while(p){ if(set.has(p)) return false; p=p.parentElement; } return true; });
+}
+function textOf(el){
+  if(el.matches('tr')) return [...el.cells].map(c=>c.innerText.trim()).filter(Boolean).join(', ');
+  return (el.getAttribute('aria-label') || el.innerText || '').replace(/\s+/g,' ').trim();
+}
+function clearMark(){ document.querySelectorAll('.a-reading').forEach(x=>x.classList.remove('a-reading')); }
+function speakNext(run){
+  if(!RD.on || run!==RD.run) return;
+  while(RD.i<RD.list.length && !textOf(RD.list[RD.i])) RD.i++;
+  if(RD.i>=RD.list.length){ stopRead(true); announce('ההקראה הסתיימה'); return; }
+  const el=RD.list[RD.i]; clearMark(); el.classList.add('a-reading');
+  el.scrollIntoView({block:'center', behavior: document.documentElement.classList.contains('a-still') ? 'auto' : 'smooth'});
+  const u=new SpeechSynthesisUtterance(textOf(el)); u.lang='he-IL'; if(RD.voice) u.voice=RD.voice;
+  u.onend=()=>{ if(run!==RD.run) return; RD.i++; speakNext(run); };
+  u.onerror=ev=>{ if(run!==RD.run || ev.error==='interrupted' || ev.error==='canceled') return; RD.i++; speakNext(run); };
+  RD.utt=u; speechSynthesis.speak(u);
+}
+function startRead(){
+  if(!synthOK) return;
+  RD.run++; speechSynthesis.cancel();
+  RD.list=readTargets(); RD.i=0; RD.on=true; RD.paused=false;
+  $('readNote').textContent = RD.voice ? '' : 'לא נמצא קול עברי במערכת. ההקראה תתבצע בקול ברירת המחדל.';
+  updateReadUI(); announce('ההקראה התחילה. Esc עוצר.');
+  const run=RD.run; setTimeout(()=>speakNext(run),60);
+}
+function stopRead(silent){
+  if(!synthOK) return;
+  const was=RD.on; RD.run++; RD.on=false; RD.paused=false; speechSynthesis.cancel(); clearMark(); updateReadUI();
+  if(was && !silent) announce('ההקראה נעצרה');
+}
+function togglePause(){
+  if(!RD.on) return;
+  if(RD.paused){ speechSynthesis.resume(); RD.paused=false; } else { speechSynthesis.pause(); RD.paused=true; }
+  updateReadUI(); announce(RD.paused?'ההקראה הושהתה':'ההקראה ממשיכה');
+}
+function updateReadUI(){
+  $('readBtn').setAttribute('aria-pressed', RD.on); $('readBtn').textContent = RD.on ? '▶ מקריא…' : '▶ הקראה';
+  $('pauseBtn').disabled=!RD.on; $('pauseBtn').textContent = RD.paused ? 'המשך' : 'השהיה';
+  $('stopBtn').disabled=!RD.on; $('stopReadTop').hidden=!RD.on;
+  $('a11yDot').hidden = !a11yChanged();
+}
+$('readBtn').onclick=()=>{ closePopup(false); startRead(); };
+$('pauseBtn').onclick=togglePause;
+$('stopBtn').onclick=()=>stopRead();
+$('stopReadTop').onclick=()=>stopRead();
+
+/* ---------------- כותרת תחתונה ---------------- */
+function ltr(t){ return t.replace(/([A-Za-z][A-Za-z0-9\-. ]*[A-Za-z0-9]|\d+(?:[.:]\d+)*)/g,'\u200E$1\u200E'); }
+function footerText(){ return ltr(`${CONFIG.unit} · ${CONFIG.course} · גרסה ${CONFIG.appVersion} · נשמר ${CONFIG.saved}`); }
 
 /* ---------------- הפעלה ---------------- */
-try{ const t=localStorage.getItem(CONFIG.storageKey+'-theme'); if(t) document.documentElement.dataset.theme=t; }catch(e){}
+applyA11y();
 load();
-const h=location.hash.slice(1); if(h) state.current=h;
+const h=location.hash.slice(1); if(h && validId(h)) state.current=h;
 render();
 </script>
 </body>
